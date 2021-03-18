@@ -1,0 +1,44 @@
+{
+  // Place your workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and
+  // description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope
+  // is left empty or omitted, the snippet gets applied to all languages. The prefix is what is
+  // used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+  // $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders.
+  // Placeholders with the same ids are connected.
+  "use-autorun": {
+    "scope": "typescript,typescriptreact",
+    "prefix": "useAutorun",
+    "body": ["useAutorun$1(", "() => {", "  $0", "},", "[],", "{ name: '$2' },", ");"],
+    "description": "useAutorun"
+  },
+  "use-press": {
+    "scope": "typescript,typescriptreact",
+    "prefix": "usePress",
+    "body": ["const handle${2/(.*)/${1:/capitalize}/} = usePress$1(() => {", "  $0", "});"],
+    "description": "usePress"
+  },
+  "use-theme": {
+    "scope": "typescript,typescriptreact",
+    "prefix": "useTheme",
+    "body": ["const { $2 } = useTheme$1();$0"],
+    "description": "useTheme"
+  },
+  "use-stores": {
+    "scope": "typescript,typescriptreact",
+    "prefix": "useStores",
+    "body": ["const { $2 } = useStores$1();$0"],
+    "description": "useStores"
+  },
+  "use-navigation": {
+    "scope": "typescript,typescriptreact",
+    "prefix": "useNavigation",
+    "body": ["const navigation = useNavigation$1();$0"],
+    "description": "useNavigation"
+  },
+  "use-translation": {
+    "scope": "typescript,typescriptreact",
+    "prefix": "useTranslation",
+    "body": ["const { t } = useTranslation$1();$0"],
+    "description": "useTranslation"
+  }
+}

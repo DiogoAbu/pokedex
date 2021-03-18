@@ -1,0 +1,170 @@
+name: Build Android
+
+on:
+  workflow_dispatch:
+    inputs:
+      checkoutRef:
+        description: "Tag or SHA ref to checkout"
+        required: false
+        default: ""
+  release:
+    types:
+      - published
+
+env:
+  node-version: "12"
+  java-version: "1.8"
+  UPLOAD_TO_RELEASE: ${{ secrets.UPLOAD_TO_RELEASE }}
+  UPLOAD_TO_GOOGLE: ${{ secrets.UPLOAD_TO_GOOGLE }}
+
+jobs:
+  release:
+    name: Build
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+        if: env.UPLOAD_TO_RELEASE == 'true' || env.UPLOAD_TO_GOOGLE == 'true'
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.inputs.checkoutRef }}
+
+      - name: Increase watchers to fix Docker
+        if: env.UPLOAD_TO_RELEASE == 'true' || env.UPLOAD_TO_GOOGLE == 'true'
+        run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        if: env.UPLOAD_TO_RELEASE == 'true' || env.UPLOAD_TO_GOOGLE == 'true'
+        with:
+          java-version: ${{ env.java-version }}
+
+      - name: Make Gradle executable
+        run: chmod +x ./gradlew
+        if: env.UPLOAD_TO_RELEASE == 'true' || env.UPLOAD_TO_GOOGLE == 'true'
+        working-directory: ./android
+
+      - name: Cache Gradle
+        uses: actions/cache@v2
+        if: env.UPLOAD_TO_RELEASE == 'true' || env.UPLOAD_TO_GOOGLE == 'true'
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle-
+
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        if: env.UPLOAD_TO_RELEASE == 'true' || env.UPLOAD_TO_GOOGLE == 'true'
+        with:
+          node-version: ${{ env.node-version }}
+
+      - name: Get Yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+        if: env.UPLOAD_TO_RELEASE == 'true' || env.UPLOAD_TO_GOOGLE == 'true'
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v2
+        id: yarn-cache
+        if: env.UPLOAD_TO_RELEASE == 'true' || env.UPLOAD_TO_GOOGLE == 'true'
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        uses: nick-invision/retry@v2
+        if: env.UPLOAD_TO_RELEASE == 'true' || env.UPLOAD_TO_GOOGLE == 'true'
+        with:
+          timeout_minutes: 10
+          max_attempts: 5
+          retry_on: error
+          command: yarn install --prefer-offline --frozen-lockfile --silent
+
+      - name: Get version
+        id: get-version
+        if: env.UPLOAD_TO_RELEASE == 'true' || env.UPLOAD_TO_GOOGLE == 'true'
+        run: echo ::set-output name=version::$(node -p "'v'+require('./package.json').version")
+
+      - name: Display version
+        if: env.UPLOAD_TO_RELEASE == 'true' || env.UPLOAD_TO_GOOGLE == 'true'
+        run: echo ${{ steps.get-version.outputs.version }}
+
+      - name: Get prerelease
+        id: get-prerelease
+        if: env.UPLOAD_TO_RELEASE == 'true' || env.UPLOAD_TO_GOOGLE == 'true'
+        run: echo ::set-output name=is-prerelease::$(node -p "!!require('semver/functions/prerelease')('${{ steps.get-version.outputs.version }}')")
+
+      - name: Display prerelease
+        if: env.UPLOAD_TO_RELEASE == 'true' || env.UPLOAD_TO_GOOGLE == 'true'
+        run: echo ${{ steps.get-prerelease.outputs.is-prerelease }}
+
+      - name: Decrypt dotenv for staging or production
+        if: env.UPLOAD_TO_RELEASE == 'true' || env.UPLOAD_TO_GOOGLE == 'true'
+        run: |
+          [[ -z "$DOTENV" ]] && exit 0
+          echo "$DOTENV" | base64 --decode > ./.env
+          chmod 600 ./.env
+        env:
+          DOTENV: ${{ (steps.get-prerelease.outputs.is-prerelease == 'true' && secrets.DOTENV_STAGING) || secrets.DOTENV_PROD }}
+
+      - name: Decrypt release keystore
+        if: env.UPLOAD_TO_RELEASE == 'true' || env.UPLOAD_TO_GOOGLE == 'true'
+        run: |
+          echo "$RELEASE_JKS" | base64 --decode > ./android/app/release.jks
+          chmod 600 ./android/app/release.jks
+        env:
+          RELEASE_JKS: ${{ secrets.RELEASE_JKS }}
+
+      - name: Decrypt google services
+        if: env.UPLOAD_TO_RELEASE == 'true' || env.UPLOAD_TO_GOOGLE == 'true'
+        run: |
+          [[ -z "$GOOGLE_SERVICES" ]] && exit 0
+          echo "$GOOGLE_SERVICES" | base64 --decode > ./android/app/google-services.json
+          chmod 600 ./android/app/google-services.json
+        env:
+          GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES }}
+
+      - name: Decrypt google play service account
+        if: env.UPLOAD_TO_GOOGLE == 'true'
+        run: |
+          [[ -z "$GOOGLE_PLAY_SERVICE_ACCOUNT" ]] && exit 0
+          echo "$GOOGLE_PLAY_SERVICE_ACCOUNT" | base64 --decode > ./google-play-service-account.json
+          chmod 600 ./google-play-service-account.json
+        env:
+          GOOGLE_PLAY_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
+
+      - name: Generate APK
+        if: env.UPLOAD_TO_RELEASE == 'true'
+        run: ./gradlew assembleRelease --no-daemon
+        working-directory: ./android
+        env:
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+
+      - name: Upload APK to Release tagged with current version
+        uses: AButler/upload-release-assets@v2.0
+        if: env.UPLOAD_TO_RELEASE == 'true'
+        with:
+          files: "./android/app/build/outputs/apk/release/*.apk"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          release-tag: ${{ steps.get-version.outputs.VERSION }}
+
+      - name: Generate AAB
+        if: env.UPLOAD_TO_GOOGLE == 'true'
+        run: ./gradlew bundleRelease --no-daemon
+        working-directory: ./android
+        env:
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+
+      - name: Upload AAB to Google Play
+        uses: DiogoAbu/upload-google-play@053164334a899567ff29ea0e7201f215017e91b4
+        if: env.UPLOAD_TO_GOOGLE == 'true'
+        with:
+          packageName: com.diogoabu.pokedex
+          releaseFiles: ./android/app/build/outputs/bundle/release/*.aab
+          mappingFile: ./android/app/build/outputs/mapping/release/mapping.txt
+          serviceAccountJson: ./google-play-service-account.json
+          track: ${{ (steps.get-prerelease.outputs.is-prerelease == 'true' && 'alpha') || 'production' }}

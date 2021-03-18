@@ -1,0 +1,5 @@
+<resources>
+  <color name="text">#cccccc</color>
+  <color name="background">#121212</color>
+  <color name="statusBarBackground">#393939</color>
+</resources>
