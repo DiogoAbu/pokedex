@@ -10,4 +10,10 @@
     <item name="android:windowLightStatusBar">@bool/statusBarTextDark</item>
   </style>
 
+  <!-- Boot splash theme -->
+  <style name="BootTheme"
+    parent="AppTheme">
+    <item name="android:background">@drawable/bootsplash</item>
+  </style>
+
 </resources>

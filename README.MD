@@ -1,6 +1,6 @@
 <h1 align="center">Pokedex</h1><br>
 <p align="center">
-  <img alt="Pokedex" title="Pokedex" src="android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" width="192">
+  <img alt="Pokedex" title="Pokedex" src="android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" width="192">
 </p>
 
 <p align="center">
@@ -64,4 +64,4 @@ Would like to help make this app better? Please take a look at the [contributing
 
 ## ❤️ Acknowledgments
 
-Give someone a thanks!
+* UI by [Saepul Nahwan](https://dribbble.com/saepulnahwan23): [Pokedex App](https://dribbble.com/shots/6545819-Pokedex-App)

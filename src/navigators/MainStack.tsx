@@ -1,12 +1,14 @@
 import React, { FC } from 'react';
 
-import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
+import { createSharedElementStackNavigator } from 'react-navigation-shared-element';
+import { CardStyleInterpolators } from '@react-navigation/stack';
 
 import Details from '!/screens/Details/Details';
 import Home from '!/screens/Home/Home';
+import ResourceList from '!/screens/ResourceList/ResourceList';
 import { MainStackParams } from '!/types';
 
-const Stack = createStackNavigator<MainStackParams>();
+const Stack = createSharedElementStackNavigator<MainStackParams>();
 
 const MainStack: FC = () => {
   return (
@@ -18,6 +20,16 @@ const MainStack: FC = () => {
       }}
     >
       <Stack.Screen component={Home} name='Home' />
+
+      <Stack.Screen
+        component={ResourceList}
+        name='ResourceList'
+        sharedElements={(route) => {
+          const resource = route.params.resource as string;
+          return [{ id: `${resource}.card.name`, resize: 'clip' }];
+        }}
+      />
+
       <Stack.Screen component={Details} name='Details' />
     </Stack.Navigator>
   );

@@ -21,3 +21,13 @@
 
 ## https://github.com/software-mansion/react-native-reanimated
 -keep class com.facebook.react.turbomodule.** { *; }
+
+## https://github.com/ammarahm-ed/react-native-mmkv-storage
+-keepclasseswithmembers,includedescriptorclasses class com.tencent.mmkv.** {
+    native <methods>;
+    long nativeHandle;
+    private static *** onMMKVCRCCheckFail(***);
+    private static *** onMMKVFileLengthError(***);
+    private static *** mmkvLogImp(...);
+    private static *** onContentChangedByOuterProcess(***);
+}

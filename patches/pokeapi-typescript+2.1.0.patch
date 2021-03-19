@@ -1,0 +1,77 @@
+diff --git a/node_modules/pokeapi-typescript/dist/classes/Endpoint.js b/node_modules/pokeapi-typescript/dist/classes/Endpoint.js
+index c831481..412028e 100644
+--- a/node_modules/pokeapi-typescript/dist/classes/Endpoint.js
++++ b/node_modules/pokeapi-typescript/dist/classes/Endpoint.js
+@@ -44,7 +44,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
+     return (mod && mod.__esModule) ? mod : { "default": mod };
+ };
+ Object.defineProperty(exports, "__esModule", { value: true });
+-var collection_1 = __importDefault(require("@discordjs/collection"));
++/* var collection_1 = __importDefault(require("@discordjs/collection")); */
+ var url_search_params_1 = __importDefault(require("@ungap/url-search-params"));
+ var cross_fetch_1 = __importDefault(require("cross-fetch"));
+ var enumerable_1 = __importDefault(require("../decorators/enumerable"));
+@@ -52,7 +52,7 @@ var BASE_URI = "https://pokeapi.co/api/v2";
+ var Endpoint = /** @class */ (function () {
+     function Endpoint(resource) {
+         this.resource = resource;
+-        this.cache = new collection_1.default();
++        /* this.cache = new collection_1.default(); */
+     }
+     /**
+      * Retrieve a resource from the cache
+@@ -60,7 +60,7 @@ var Endpoint = /** @class */ (function () {
+      * @returns {?T}
+      */
+     Endpoint.prototype.get = function (param) {
+-        return this.cache.get(param);
++        /*return this.cache.get(param);*/
+     };
+     /**
+      * Retrieve a resource from cache if it exists, or attempt to fetch it from the API
+@@ -148,7 +148,7 @@ var Endpoint = /** @class */ (function () {
+         });
+     };
+     Endpoint.prototype._cache = function (data) {
+-        this.cache.set(data.id, data);
++        /*this.cache.set(data.id, data);*/
+     };
+     __decorate([
+         enumerable_1.default
+diff --git a/node_modules/pokeapi-typescript/dist/classes/NamedEndpoint.js b/node_modules/pokeapi-typescript/dist/classes/NamedEndpoint.js
+index 813c8a0..d0dfe8d 100644
+--- a/node_modules/pokeapi-typescript/dist/classes/NamedEndpoint.js
++++ b/node_modules/pokeapi-typescript/dist/classes/NamedEndpoint.js
+@@ -75,7 +75,7 @@ var NamedEndpoint = /** @class */ (function (_super) {
+      * @returns {?T}
+      */
+     NamedEndpoint.prototype.get = function (param) {
+-        return this.cache.get(typeof param === "number" ? param : this._nameMap.get(param.toLowerCase()));
++        /*return this.cache.get(typeof param === "number" ? param : this._nameMap.get(param.toLowerCase()));*/
+     };
+     /**
+      * Fetch a resource from the API
+@@ -165,8 +165,8 @@ var NamedEndpoint = /** @class */ (function (_super) {
+         });
+     };
+     NamedEndpoint.prototype._cache = function (data) {
+-        this.cache.set(data.id, data);
+-        this._nameMap.set(data.name, data.id);
++        /*this.cache.set(data.id, data);*/
++        /*this._nameMap.set(data.name, data.id);*/
+     };
+     __decorate([
+         enumerable_1.default
+diff --git a/node_modules/pokeapi-typescript/dist/index.d.ts b/node_modules/pokeapi-typescript/dist/index.d.ts
+index 8a79b1e..53dbc28 100644
+--- a/node_modules/pokeapi-typescript/dist/index.d.ts
++++ b/node_modules/pokeapi-typescript/dist/index.d.ts
+@@ -49,6 +49,8 @@ import { IStat } from "./interfaces/Pokemon/Stat";
+ import { IType } from "./interfaces/Pokemon/Type";
+ import { IApiResource } from "./interfaces/Utility/ApiResourceList";
+ import { ILanguage } from "./interfaces/Utility/Language";
++export * from "./classes/Endpoint";
++export * from "./classes/NamedEndpoint";
+ export * from "./interfaces/Berries/Berry";
+ export * from "./interfaces/Berries/BerryFirmness";
+ export * from "./interfaces/Berries/BerryFlavor";

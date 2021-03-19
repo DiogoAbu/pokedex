@@ -7,16 +7,33 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
 
-  headerContent: {
-    margin: constants.smallGrid,
-    padding: constants.grid,
-  },
-  headerText: {
-    textAlign: 'center',
+  imagePokeball: {
+    opacity: 0.1,
+    position: 'absolute',
+    top: -60,
+    right: -96,
+    width: 256,
+    height: 256,
   },
 
-  itemText: {
-    padding: constants.grid,
+  title: {
+    fontWeight: 'bold',
+    fontSize: 32,
+  },
+
+  searchbar: {
+    marginTop: constants.grid,
+    marginBottom: constants.gridBig,
+  },
+
+  card: {
+    borderBottomEndRadius: constants.grid,
+    borderBottomStartRadius: constants.grid,
+    shadowColor: constants.colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
   },
 });
 

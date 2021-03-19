@@ -4,8 +4,27 @@ const grid = 16;
 
 export const constants = {
   grid,
-  smallGrid: grid / 2,
-  bigGrid: grid * 2,
+  gridSmall: grid / 2,
+  gridBig: grid * 2,
+  headerHeight: 80,
+  colors: {
+    white: '#ffffff',
+    black: '#000000',
+
+    pokemons: '#4fc1a6',
+    moves: '#f7786b',
+    abilities: '#58aaf6',
+    items: '#ffc018',
+    locations: '#7c538c',
+    typeCharts: '#b1736c',
+
+    pokemonsOverlay: '#65d4bd',
+    movesOverlay: '#f98b7e',
+    abilitiesOverlay: '#6fc1f9',
+    itemsOverlay: '#ffd25d',
+    locationsOverlay: '#9569a5',
+    typeChartsOverlay: '#c1867f',
+  },
 };
 
 export const darkTheme: Theme = {

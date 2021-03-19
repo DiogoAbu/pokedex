@@ -1,35 +1,63 @@
-import React, { FC } from 'react';
-import { FlatList, View } from 'react-native';
+import React, { FC, useEffect } from 'react';
+import { ScrollView, View } from 'react-native';
 
-import Separator from '!/components/Separator';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation, useTheme } from '@react-navigation/native';
+
+import ButtonCard from '!/components/ButtonCard';
+import Row from '!/components/Row';
+import Searchbar from '!/components/Searchbar';
 import Text from '!/components/Text';
-import useStatusBarStyle from '!/hooks/use-status-bar-style';
+import { constants } from '!/services/theme';
+import { MainNavigationProp } from '!/types';
 
-import HomeItem from './HomeItem';
 import styles from './styles';
 
-const keyExtractor = (_item: number, index: number) => index.toString();
-
 const Home: FC = () => {
-  useStatusBarStyle();
+  const navigation = useNavigation<MainNavigationProp<'Home'>>();
+  const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
 
   return (
-    <FlatList
-      data={Array(20)}
-      ItemSeparatorComponent={Separator}
-      keyExtractor={keyExtractor}
-      ListHeaderComponent={
-        <>
-          <View style={styles.headerContent}>
-            <Text style={styles.headerText}>Welcome to Pokedex!</Text>
-          </View>
+    <ScrollView contentContainerStyle={styles.contentContainer} style={{ backgroundColor: colors.border }}>
+      <View
+        style={[
+          styles.card,
+          {
+            backgroundColor: colors.card,
+            paddingBottom: insets.bottom + constants.gridBig,
+            paddingLeft: insets.left + constants.grid,
+            paddingRight: insets.right + constants.grid,
+            paddingTop: insets.top + constants.grid,
+          },
+        ]}
+      >
+        <Text style={styles.title} testID='home-title'>
+          What are you looking for?
+        </Text>
 
-          <Separator />
-        </>
-      }
-      renderItem={(props) => <HomeItem {...props} />}
-      style={styles.contentContainer}
-    />
+        <Searchbar style={styles.searchbar} />
+
+        <Row>
+          <ButtonCard resource='pokemons' />
+          <ButtonCard resource='moves' right />
+        </Row>
+        <Row>
+          <ButtonCard resource='abilities' />
+          <ButtonCard resource='items' right />
+        </Row>
+        <Row>
+          <ButtonCard bottom resource='locations' />
+          <ButtonCard bottom resource='typeCharts' right />
+        </Row>
+      </View>
+    </ScrollView>
   );
 };
 

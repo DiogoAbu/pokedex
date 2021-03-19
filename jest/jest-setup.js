@@ -18,13 +18,27 @@ jest.mock('react-native/Libraries/EventEmitter/NativeEventEmitter.js', () => {
 // Fix for `useNativeDriver` is not supported because the native animated module is missing.
 jest.mock('react-native/Libraries/Animated/src/NativeAnimatedHelper');
 
-jest.mock('@react-navigation/core', () => ({
-  createNavigatorFactory: jest.fn(),
-  useNavigation: jest.fn(),
-}));
-
-jest.mock('@react-navigation/stack', () => ({
-  createStackNavigator: jest.fn(),
-}));
-
 jest.mock('@react-native-community/masked-view', () => ({}));
+
+jest.mock('react-native-bootsplash', () => {
+  return {
+    hide: jest.fn().mockResolvedValueOnce(),
+    show: jest.fn().mockResolvedValueOnce(),
+    getVisibilityStatus: jest.fn().mockResolvedValue('hidden'),
+  };
+});
+
+jest.mock('react-native-safe-area-context', () => {
+  const inset = {
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+  };
+  return {
+    SafeAreaProvider: ({ children }) => children,
+    SafeAreaConsumer: ({ children }) => children(inset),
+    SafeAreaView: ({ children }) => children,
+    useSafeAreaInsets: () => inset,
+  };
+});
