@@ -76,7 +76,7 @@ Git GPG key, find out more [here](https://github.com/crazy-max/ghaction-import-g
 App Signing config:
 - `RELEASE_JKS` keystore that signs the app:
   ```sh
-  openssl base64 -in android/app/release.jks | gh secret set RELEASE_JKS
+  openssl base64 -in android/app/release.jks | sed -z '$ s/\n$//' | gh secret set RELEASE_JKS
   ```
 - `RELEASE_KEY_ALIAS` the alias used to sign the keystore;
   ```sh
@@ -115,7 +115,7 @@ gh secret set UPLOAD_TO_RELEASE -b "true"
 gh secret set UPLOAD_TO_GOOGLE -b "false"
 gh secret set RELEASE_KEY_ALIAS -b "PASTE_KEY_ALIAS"
 gh secret set RELEASE_KEY_PASSWORD -b "PASTE_KEY_PASSWORD"
-openssl base64 -in android/app/release.jks | gh secret set RELEASE_JKS
+openssl base64 -in android/app/release.jks | sed -z '$ s/\n$//' | gh secret set RELEASE_JKS
 gh secret set GPG_PASSPHRASE -b "PASTE_GPG_PASSPHRASE"
 gpg --armor --export-secret-key YOUR@EMAIL.COM | gh secret set GPG_PRIVATE_KEY
 ```
