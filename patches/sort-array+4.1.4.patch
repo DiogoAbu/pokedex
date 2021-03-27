@@ -1,0 +1,37 @@
+diff --git a/node_modules/sort-array/index.d.ts b/node_modules/sort-array/index.d.ts
+new file mode 100644
+index 0000000..09a656b
+--- /dev/null
++++ b/node_modules/sort-array/index.d.ts
+@@ -0,0 +1,31 @@
++type SingleOrArray<T> = T | T[];
++
++declare enum NullRank {
++    Before = -1,
++    After = 1,
++}
++
++declare enum UndefinedRank {
++    Before = -1,
++    After = 1,
++}
++
++type PrimitiveOrders = "asc" | "desc";
++
++declare function sortArray<SingleElement = object>(
++    array: SingleElement[],
++    options?: {
++        // How to reference to customOrders?
++        by: SingleOrArray<string | (keyof SingleElement)>;
++
++        customOrders?: Record<string, any[]>;
++        order?: SingleOrArray<PrimitiveOrders | string>;
++
++        computed?: Record<string, (element: SingleElement) => (string | number | boolean | null)>;
++
++        nullRank?: NullRank;
++        undefinedRank?: UndefinedRank;
++    },
++): SingleElement[];
++
++export = sortArray;

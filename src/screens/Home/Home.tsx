@@ -4,10 +4,9 @@ import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useTheme } from '@react-navigation/native';
 
-import ButtonCard from '!/components/ButtonCard';
-import Row from '!/components/Row';
 import Searchbar from '!/components/Searchbar';
 import Text from '!/components/Text';
+import ButtonCard from '!/screens/Home/ButtonCard';
 import { constants } from '!/services/theme';
 import { MainNavigationProp } from '!/types';
 
@@ -44,18 +43,18 @@ const Home: FC = () => {
 
         <Searchbar style={styles.searchbar} />
 
-        <Row>
+        <View style={styles.row}>
           <ButtonCard resource='pokemons' />
-          <ButtonCard resource='moves' right />
-        </Row>
-        <Row>
-          <ButtonCard resource='abilities' />
-          <ButtonCard resource='items' right />
-        </Row>
-        <Row>
-          <ButtonCard bottom resource='locations' />
-          <ButtonCard bottom resource='typeCharts' right />
-        </Row>
+          <ButtonCard disabled resource='moves' right />
+        </View>
+        <View style={styles.row}>
+          <ButtonCard disabled resource='abilities' />
+          <ButtonCard disabled resource='items' right />
+        </View>
+        <View style={styles.row}>
+          <ButtonCard bottom disabled resource='locations' />
+          <ButtonCard bottom disabled resource='typeCharts' right />
+        </View>
       </View>
     </ScrollView>
   );

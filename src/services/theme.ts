@@ -25,6 +25,26 @@ export const constants = {
     locationsOverlay: '#9569a5',
     typeChartsOverlay: '#c1867f',
   },
+  typesColor: {
+    normal: '#A8A878',
+    fire: '#F08030',
+    fighting: '#C03028',
+    water: '#6890F0',
+    flying: '#A890F0',
+    grass: '#78C850',
+    poison: '#A040A0',
+    electric: '#F8D030',
+    ground: '#E0C068',
+    psychic: '#F85888',
+    rock: '#B8A038',
+    ice: '#98D8D8',
+    bug: '#A8B820',
+    dragon: '#7038F8',
+    ghost: '#705898',
+    dark: '#705848',
+    steel: '#B8B8D0',
+    fairy: '#EE99AC',
+  },
 };
 
 export const darkTheme: Theme = {
@@ -35,7 +55,7 @@ export const darkTheme: Theme = {
     border: '#393939',
     card: '#262626',
     notification: '#ff453a',
-    primary: '#0a84ff',
+    primary: '#e73648',
     text: '#cccccc',
   },
 };
@@ -48,7 +68,7 @@ export const lightTheme: Theme = {
     border: '#d8d8d8',
     card: '#ffffff',
     notification: '#ff3b30',
-    primary: '#007aff',
+    primary: '#e73648',
     text: '#1c1c1e',
   },
 };

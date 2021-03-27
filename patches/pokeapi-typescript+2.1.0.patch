@@ -1,5 +1,5 @@
 diff --git a/node_modules/pokeapi-typescript/dist/classes/Endpoint.js b/node_modules/pokeapi-typescript/dist/classes/Endpoint.js
-index c831481..412028e 100644
+index c831481..df89466 100644
 --- a/node_modules/pokeapi-typescript/dist/classes/Endpoint.js
 +++ b/node_modules/pokeapi-typescript/dist/classes/Endpoint.js
 @@ -44,7 +44,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -39,7 +39,7 @@ index c831481..412028e 100644
      __decorate([
          enumerable_1.default
 diff --git a/node_modules/pokeapi-typescript/dist/classes/NamedEndpoint.js b/node_modules/pokeapi-typescript/dist/classes/NamedEndpoint.js
-index 813c8a0..d0dfe8d 100644
+index 813c8a0..9a3faa9 100644
 --- a/node_modules/pokeapi-typescript/dist/classes/NamedEndpoint.js
 +++ b/node_modules/pokeapi-typescript/dist/classes/NamedEndpoint.js
 @@ -75,7 +75,7 @@ var NamedEndpoint = /** @class */ (function (_super) {
@@ -75,3 +75,16 @@ index 8a79b1e..53dbc28 100644
  export * from "./interfaces/Berries/Berry";
  export * from "./interfaces/Berries/BerryFirmness";
  export * from "./interfaces/Berries/BerryFlavor";
+diff --git a/node_modules/pokeapi-typescript/dist/interfaces/Pokemon/PokemonSpecies.d.ts b/node_modules/pokeapi-typescript/dist/interfaces/Pokemon/PokemonSpecies.d.ts
+index b6782c1..b44e407 100644
+--- a/node_modules/pokeapi-typescript/dist/interfaces/Pokemon/PokemonSpecies.d.ts
++++ b/node_modules/pokeapi-typescript/dist/interfaces/Pokemon/PokemonSpecies.d.ts
+@@ -30,7 +30,7 @@ export interface IPokemonSpecies {
+     shape: INamedApiResource<IPokemonShape>;
+     evolves_from_species: INamedApiResource<IPokemonSpecies>;
+     evolution_chain: IApiResource<IEvolutionChain>;
+-    habitat: INamedApiResource<IPokemonHabitat>;
++    habitat: INamedApiResource<IPokemonHabitat> | null;
+     generation: INamedApiResource<IGeneration>;
+     names: IName[];
+     pal_park_encounters: IPalParkEnounterArea[];

@@ -16,7 +16,9 @@ jest.mock('react-native/Libraries/EventEmitter/NativeEventEmitter.js', () => {
 });
 
 // Fix for `useNativeDriver` is not supported because the native animated module is missing.
-jest.mock('react-native/Libraries/Animated/src/NativeAnimatedHelper');
+jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
+
+jest.mock('@react-native/polyfills/error-guard.js');
 
 jest.mock('@react-native-community/masked-view', () => ({}));
 

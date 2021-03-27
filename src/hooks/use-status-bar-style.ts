@@ -13,7 +13,7 @@ export default function useStatusBarStyle(): void {
 
     if (Platform.OS === 'android') {
       // StatusBar.setTranslucent(true);
-      StatusBar.setBackgroundColor('rgba(0, 0, 0, 0.5)');
+      StatusBar.setBackgroundColor('rgba(0, 0, 0, 0.35)');
     }
     StatusBar.setBarStyle('light-content');
 

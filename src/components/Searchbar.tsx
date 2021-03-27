@@ -15,9 +15,12 @@ const Searchbar: FC<Props> = ({ style }) => {
   const { dark, colors } = useTheme();
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.border }, style]}>
+    <View
+      style={[styles.container, { backgroundColor: colors.background, borderColor: colors.border }, style]}
+    >
       <Icon name='magnify' size={32} />
       <TextInput
+        editable={false}
         placeholder='Search Pokémon, Move, Ability, etc...'
         placeholderTextColor={dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'}
         returnKeyType='search'
@@ -36,6 +39,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderStyle: 'solid',
   },
   input: {
     marginHorizontal: constants.gridSmall,

@@ -26,6 +26,12 @@ const styles = StyleSheet.create({
     marginBottom: constants.gridBig,
   },
 
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+  },
+
   card: {
     borderBottomEndRadius: constants.grid,
     borderBottomStartRadius: constants.grid,
