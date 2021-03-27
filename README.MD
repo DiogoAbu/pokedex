@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  Some awesome short description.
+  Everything about Pokémons, at your fingertips.
 </p>
 
 <p align="center">
@@ -16,7 +16,7 @@
   </a>
 </p>
 
-<p align="center">
+<!-- <p align="center">
   <a href="#CHANGE_GOOGLE_PLAY_STORE_LINK">
     <img alt="Get it on Google Play" title="Google Play" src=".github/assets/get-on-google-play.png" width="140">
   </a>
@@ -24,7 +24,7 @@
   <a href="#CHANGE_ITUNES_APP_STORE_LINK">
     <img alt="Download on the App Store" title="App Store" src=".github/assets/get-on-app-store.png" width="140">
   </a>
-</p>
+</p> -->
 
 <!-- [BEGIN] Don't edit this section, instead run Markdown AIO: Update Table of Contents -->
 ## 🚩 Table of Contents
@@ -38,25 +38,25 @@
 
 ## 🚀 Introduction
 
-Description of what your project does.
+Find out all about Pokémons, their moves, evolutions and much more!
+This app is powered by tons of data from the [PokéApi](https://pokeapi.co/), and as you browse it's stored for offline use.
 
-**Available for both iOS and Android.**
+<!-- **Available for both iOS and Android.** -->
 
-<p align="center">
+<!-- <p align="center">
   <img src="#CHANGE_PROMOTIONAL_SCREENSHOT" width="350">
-</p>
+</p> -->
 
 ## 🎨 Features
 
-* This!
-* And this.
-* That too!
-* Also this.
-* And that.
+* All about Pokémons...
+* ...Moves...
+* ...Abilities...
+* Put a team together and compare.
 
-<p align="center">
+<!-- <p align="center">
   <img src="#CHANGE_OVERVIEW_SCREENSHOT" width="700">
-</p>
+</p> -->
 
 ## 💬 Contributing
 
@@ -64,4 +64,6 @@ Would like to help make this app better? Please take a look at the [contributing
 
 ## ❤️ Acknowledgments
 
-* UI by [Saepul Nahwan](https://dribbble.com/saepulnahwan23): [Pokedex App](https://dribbble.com/shots/6545819-Pokedex-App)
+* [UI](https://dribbble.com/shots/6545819-Pokedex-App) by [Saepul Nahwan](https://dribbble.com/saepulnahwan23)
+* Data by [PokéApi](https://pokeapi.co/)
+* Sprites by [Pokémon Database](https://pokemondb.net/)
