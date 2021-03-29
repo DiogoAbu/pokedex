@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { InteractionManager, ListRenderItem } from 'react-native';
+import { ListRenderItem, StyleSheet } from 'react-native';
 
 import { IItem, IPokemonMove } from 'pokeapi-typescript';
 
@@ -7,21 +7,17 @@ import Badge from '!/components/Badge';
 import ChipType from '!/components/ChipType';
 import ListItem from '!/components/ListItem';
 import Text from '!/components/Text';
-import useFocusEffect from '!/hooks/use-focus-effect';
 import usePokeApi from '!/hooks/use-poke-api';
 import getIdFromUrl from '!/utils/get-id-from-url';
 import getTypeColor from '!/utils/get-type-color';
 
-import styles from './styles';
-
 const mutateDataMachineItem = ({ names }: IItem): Partial<IItem> => ({ names });
 
 const MoveItem: ListRenderItem<IPokemonMove> = ({ item }) => {
-  const { data: move, makeRequest } = usePokeApi({
+  const { data: move } = usePokeApi({
     endpoint: 'Move',
     id: getIdFromUrl(item.move.url),
     page: undefined,
-    autoRequest: false,
   });
 
   const { data: machine } = usePokeApi({
@@ -36,12 +32,6 @@ const MoveItem: ListRenderItem<IPokemonMove> = ({ item }) => {
     page: undefined,
     mutateData: mutateDataMachineItem,
   });
-
-  useFocusEffect(() => {
-    void InteractionManager.runAfterInteractions(() => {
-      void makeRequest();
-    });
-  }, [makeRequest]);
 
   if (!move) {
     return null;
@@ -75,5 +65,12 @@ const MoveItem: ListRenderItem<IPokemonMove> = ({ item }) => {
     />
   );
 };
+
+const styles = StyleSheet.create({
+  moveItemName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
 
 export default memo(MoveItem);

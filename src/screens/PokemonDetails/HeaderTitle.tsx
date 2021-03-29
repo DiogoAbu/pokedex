@@ -28,7 +28,7 @@ const HeaderTitle: FC<Props> = ({ scrollY, statusBarHeight, maxHeight, scrollDis
 
   const translateX = scrollY.interpolate({
     inputRange: [0, scrollDistance],
-    outputRange: [constants.grid, 48],
+    outputRange: [constants.grid, 64],
     extrapolate: 'clamp',
   });
 

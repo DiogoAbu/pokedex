@@ -1,7 +1,6 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import {
   Animated,
-  InteractionManager,
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
@@ -16,7 +15,7 @@ import { HeaderBackButton } from '@react-navigation/stack';
 import Icon from '!/components/Icon';
 import useMethod from '!/hooks/use-method';
 import usePokeApi from '!/hooks/use-poke-api';
-import { constants } from '!/services/theme';
+import usePress from '!/hooks/use-press';
 import { MainNavigationProp, MainRouteProp } from '!/types';
 import { getHeaderHeight } from '!/utils/get-header-height';
 import getIdFromUrl from '!/utils/get-id-from-url';
@@ -49,12 +48,11 @@ const PokemonDetails: FC = () => {
   const offsetPrevX = useRef(0);
   const [scrollHeight, setScrollHeight] = useState(0);
 
-  const { data: pokemon, makeRequest } = usePokeApi({
+  const { data: pokemon } = usePokeApi({
     endpoint: 'Pokemon',
     id,
     page: undefined,
     mutateData: undefined,
-    autoRequest: false,
   });
 
   const { data: species } = usePokeApi({
@@ -94,21 +92,29 @@ const PokemonDetails: FC = () => {
     offsetY.current = contentOffset.y;
     setScrollHeight(contentSize.height);
   }, []);
+
   const handleOnScrollHorizontal = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const { contentOffset } = event.nativeEvent;
     offsetX.current = contentOffset.x;
   }, []);
 
+  const handleAddToTeam = usePress(() => {
+    //
+  });
+
   useEffect(() => {
     navigation.setOptions({
-      headerTintColor: constants.colors.white,
-      headerRight: HeaderRight,
+      // eslint-disable-next-line react/no-unstable-nested-components
+      headerRight: (props) => (
+        <HeaderBackButton
+          {...props}
+          backImage={({ tintColor }) => <Icon color={tintColor} name='pokeball' size={30} />}
+          labelVisible={false}
+          onPress={handleAddToTeam}
+        />
+      ),
     });
-
-    void InteractionManager.runAfterInteractions(() => {
-      void makeRequest();
-    });
-  }, [makeRequest, navigation]);
+  }, [handleAddToTeam, navigation]);
 
   const displayFooterImage = scrollHeight > layout.height;
 
@@ -186,13 +192,5 @@ const PokemonDetails: FC = () => {
     </>
   );
 };
-
-const HeaderRight = (props: { tintColor?: string }) => (
-  <HeaderBackButton
-    {...props}
-    backImage={({ tintColor }) => <Icon color={tintColor} name='pokeball' size={30} />}
-    labelVisible={false}
-  />
-);
 
 export default PokemonDetails;

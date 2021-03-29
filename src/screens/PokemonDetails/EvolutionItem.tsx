@@ -15,7 +15,7 @@ import { MainNavigationProp } from '!/types';
 import capitalize from '!/utils/capitalize';
 import { EvolutionChainOne } from '!/utils/get-evolution-chain';
 import getIdFromUrl from '!/utils/get-id-from-url';
-import getSpriteUrl from '!/utils/get-sprite-url';
+import getSpriteUrl from '!/utils/get-sprite-big';
 import getTypeColor from '!/utils/get-type-color';
 
 import styles from './styles';

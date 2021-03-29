@@ -11,6 +11,7 @@ import LoadingPokeball from '!/components/LoadingPokeball';
 import Text from '!/components/Text';
 import useMethod from '!/hooks/use-method';
 import usePokeApi from '!/hooks/use-poke-api';
+import usePress from '!/hooks/use-press';
 import { constants } from '!/services/theme';
 import { MainNavigationProp, MainRouteProp } from '!/types';
 import { getHeaderHeight } from '!/utils/get-header-height';
@@ -27,7 +28,7 @@ const ResourceList: FC = () => {
   const layout = useWindowDimensions();
 
   const [page, setPage] = useState(1);
-  const { data } = usePokeApi({ endpoint: 'Pokemon', page });
+  const { data } = usePokeApi({ endpoint: 'Pokemon', page, priority: 1 });
 
   const scrollY = useRef(new Animated.Value(0)).current;
   const HEADER_HEIGHT = getHeaderHeight(layout) - getStatusBarHeight();
@@ -40,7 +41,7 @@ const ResourceList: FC = () => {
 
   const translateX = scrollY.interpolate({
     inputRange: [0, HEADER_HEIGHT],
-    outputRange: [constants.grid, 48],
+    outputRange: [constants.grid, 40],
     extrapolate: 'clamp',
   });
 
@@ -48,6 +49,10 @@ const ResourceList: FC = () => {
     inputRange: [0, HEADER_HEIGHT],
     outputRange: [1, 0.85],
     extrapolate: 'clamp',
+  });
+
+  const handleOpenSearchbar = usePress(() => {
+    //
   });
 
   const fetchNextPage = useMethod(() => {
@@ -58,9 +63,17 @@ const ResourceList: FC = () => {
 
   useEffect(() => {
     navigation.setOptions({
-      headerRight: HeaderRight,
+      // eslint-disable-next-line react/no-unstable-nested-components
+      headerRight: (props) => (
+        <HeaderBackButton
+          {...props}
+          backImage={({ tintColor }) => <Icon color={tintColor} name='magnify' size={30} />}
+          labelVisible={false}
+          onPress={handleOpenSearchbar}
+        />
+      ),
     });
-  }, [navigation]);
+  }, [handleOpenSearchbar, navigation]);
 
   return (
     <>
@@ -94,13 +107,5 @@ const ResourceList: FC = () => {
     </>
   );
 };
-
-const HeaderRight = (props: { tintColor?: string }) => (
-  <HeaderBackButton
-    {...props}
-    backImage={({ tintColor }) => <Icon color={tintColor} name='magnify' size={30} />}
-    labelVisible={false}
-  />
-);
 
 export default ResourceList;

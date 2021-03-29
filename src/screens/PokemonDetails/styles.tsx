@@ -158,11 +158,6 @@ const styles = StyleSheet.create({
     marginBottom: constants.gridSmall,
   },
 
-  moveItemName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-
   tabEmptyText: {
     textAlign: 'center',
   },

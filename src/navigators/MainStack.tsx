@@ -8,6 +8,7 @@ import Icon from '!/components/Icon';
 import Home from '!/screens/Home/Home';
 import PokemonDetails from '!/screens/PokemonDetails/PokemonDetails';
 import ResourceList from '!/screens/ResourceList/ResourceList';
+import { constants } from '!/services/theme';
 import { MainStackParams } from '!/types';
 
 const Stack = createSharedElementStackNavigator<MainStackParams>();
@@ -22,7 +23,13 @@ const MainStack: FC = () => {
         headerBackImage: ({ tintColor }) => <Icon color={tintColor} name='chevron-left' size={40} />,
       }}
     >
-      <Stack.Screen component={Home} name='Home' />
+      <Stack.Screen
+        component={Home}
+        name='Home'
+        options={{
+          headerShown: false,
+        }}
+      />
 
       <Stack.Screen
         component={ResourceList}
@@ -39,6 +46,7 @@ const MainStack: FC = () => {
         options={{
           headerTitle: '',
           headerTransparent: true,
+          headerTintColor: constants.colors.white,
         }}
         sharedElements={(route, otherRoute) => {
           if (otherRoute.name !== 'Details') {

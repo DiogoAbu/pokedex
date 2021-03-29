@@ -6,7 +6,7 @@ import { IPokemon } from 'pokeapi-typescript';
 
 import { constants } from '!/services/theme';
 import capitalize from '!/utils/capitalize';
-import getSpriteUrl from '!/utils/get-sprite-url';
+import getSpriteUrl from '!/utils/get-sprite-big';
 import getTypeColor from '!/utils/get-type-color';
 
 import CardBackground from './CardBackground';

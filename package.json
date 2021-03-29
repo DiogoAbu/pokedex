@@ -46,6 +46,7 @@
     "@react-native-community/masked-view": "^0.1.10",
     "@react-navigation/native": "^5.9.3",
     "@react-navigation/stack": "^5.14.3",
+    "bottleneck": "^2.19.5",
     "pokeapi-typescript": "^2.1.0",
     "react": "17.0.2",
     "react-native": "0.64.0",

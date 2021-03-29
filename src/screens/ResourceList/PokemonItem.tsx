@@ -1,5 +1,5 @@
-import React, { memo, useEffect } from 'react';
-import { InteractionManager, ListRenderItem, View } from 'react-native';
+import React, { memo } from 'react';
+import { ListRenderItem, View } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
@@ -15,7 +15,7 @@ import usePress from '!/hooks/use-press';
 import { constants } from '!/services/theme';
 import { MainNavigationProp } from '!/types';
 import getIdFromUrl from '!/utils/get-id-from-url';
-import getSpriteUrl from '!/utils/get-sprite-url';
+import getSpriteUrl from '!/utils/get-sprite-big';
 import getTypeColor from '!/utils/get-type-color';
 
 import ChipType from '../../components/ChipType';
@@ -33,12 +33,11 @@ const PokemonItem: ListRenderItem<IApiResource<IPokemon>> = ({ item }) => {
   const navigation = useNavigation<MainNavigationProp<'ResourceList'>>();
   const { colors } = useTheme();
 
-  const { data: pokemon, loading: loadingPokemon, makeRequest: makeRequestPokemon } = usePokeApi({
+  const { data: pokemon, loading: loadingPokemon } = usePokeApi({
     endpoint: 'Pokemon',
     id: getIdFromUrl(item.url),
     page: undefined,
     mutateData: mutateDataPokemon,
-    autoRequest: false,
   });
 
   const { data: species, loading: loadingSpecies } = usePokeApi({
@@ -66,12 +65,6 @@ const PokemonItem: ListRenderItem<IApiResource<IPokemon>> = ({ item }) => {
       });
     }
   });
-
-  useEffect(() => {
-    void InteractionManager.runAfterInteractions(() => {
-      void makeRequestPokemon();
-    });
-  }, [makeRequestPokemon]);
 
   if (loadingPokemon || loadingSpecies) {
     return (

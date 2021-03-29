@@ -1,5 +1,42 @@
+diff --git a/node_modules/pokeapi-typescript/dist/classes/Endpoint.d.ts b/node_modules/pokeapi-typescript/dist/classes/Endpoint.d.ts
+index 39af139..90521fd 100644
+--- a/node_modules/pokeapi-typescript/dist/classes/Endpoint.d.ts
++++ b/node_modules/pokeapi-typescript/dist/classes/Endpoint.d.ts
+@@ -17,28 +17,28 @@ declare class Endpoint<T> {
+      * @param {EndpointParam} param - The ID of the resource to resolve
+      * @returns {Promise<T>}
+      */
+-    resolve(param: EndpointParam): Promise<T>;
++    resolve(param: EndpointParam, options?: RequestInit): Promise<T>;
+     /**
+      * Fetch a resource from the API
+      * @param {EndpointParam} param - The ID of the item to fetch
+      * @param {boolean} [cache=true] - Whether or not to cache this resource
+      * @returns {Promise<T>}
+      */
+-    fetch(param: EndpointParam, cache?: boolean): Promise<T>;
++    fetch(param: EndpointParam, cache?: boolean, options?: RequestInit): Promise<T>;
+     /**
+      * Fetches the paginated resource list from the API, or uses the internal cache if listAll() has been called.
+      * @param {number} [limit=20] - How many resources to list
+      * @param {offset} [offset=0]
+      * @returns {Promise<NamedApiResourceList<T>>}
+      */
+-    list(limit?: number, offset?: number): Promise<IApiResourceList<T>>;
++    list(limit?: number, offset?: number, options?: RequestInit): Promise<IApiResourceList<T>>;
+     /**
+      * Fetches the complete resource list from the API by making two calls.
+      * Caches the list by default for API-less pagination
+      * @param {boolean} [cache=true] - If the result should be cahced in-memory
+      * @returns {Promise<NamedApiResourceList<T>>}
+      */
+-    listAll(cache?: boolean): Promise<IApiResourceList<T>>;
++    listAll(cache?: boolean, options?: RequestInit): Promise<IApiResourceList<T>>;
+     _cache(data: any): void;
+ }
+ export { Endpoint, EndpointParam };
 diff --git a/node_modules/pokeapi-typescript/dist/classes/Endpoint.js b/node_modules/pokeapi-typescript/dist/classes/Endpoint.js
-index c831481..df89466 100644
+index c831481..c32e7a3 100644
 --- a/node_modules/pokeapi-typescript/dist/classes/Endpoint.js
 +++ b/node_modules/pokeapi-typescript/dist/classes/Endpoint.js
 @@ -44,7 +44,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -20,7 +57,7 @@ index c831481..df89466 100644
      }
      /**
       * Retrieve a resource from the cache
-@@ -60,7 +60,7 @@ var Endpoint = /** @class */ (function () {
+@@ -60,17 +60,18 @@ var Endpoint = /** @class */ (function () {
       * @returns {?T}
       */
      Endpoint.prototype.get = function (param) {
@@ -29,7 +66,85 @@ index c831481..df89466 100644
      };
      /**
       * Retrieve a resource from cache if it exists, or attempt to fetch it from the API
-@@ -148,7 +148,7 @@ var Endpoint = /** @class */ (function () {
+      * @param {EndpointParam} param - The ID of the resource to resolve
++     * @param {RequestInit} options - Fetch options
+      * @returns {Promise<T>}
+      */
+-    Endpoint.prototype.resolve = function (param) {
++    Endpoint.prototype.resolve = function (param, options) {
+         return __awaiter(this, void 0, void 0, function () {
+             return __generator(this, function (_a) {
+-                return [2 /*return*/, this.get(param) || this.fetch(param)];
++                return [2 /*return*/, this.get(param) || this.fetch(param, undefined, options)];
+             });
+         });
+     };
+@@ -78,15 +79,16 @@ var Endpoint = /** @class */ (function () {
+      * Fetch a resource from the API
+      * @param {EndpointParam} param - The ID of the item to fetch
+      * @param {boolean} [cache=true] - Whether or not to cache this resource
++     * @param {RequestInit} options - Fetch options
+      * @returns {Promise<T>}
+      */
+-    Endpoint.prototype.fetch = function (param, cache) {
++    Endpoint.prototype.fetch = function (param, cache, options) {
+         if (cache === void 0) { cache = true; }
+         return __awaiter(this, void 0, void 0, function () {
+             var data;
+             return __generator(this, function (_a) {
+                 switch (_a.label) {
+-                    case 0: return [4 /*yield*/, cross_fetch_1.default(BASE_URI + "/" + this.resource + "/" + param).then(function (res) { return res.json(); })];
++                    case 0: return [4 /*yield*/, cross_fetch_1.default(BASE_URI + "/" + this.resource + "/" + param, options).then(function (res) { return res.json(); })];
+                     case 1:
+                         data = _a.sent();
+                         this._cache(data);
+@@ -99,9 +101,10 @@ var Endpoint = /** @class */ (function () {
+      * Fetches the paginated resource list from the API, or uses the internal cache if listAll() has been called.
+      * @param {number} [limit=20] - How many resources to list
+      * @param {offset} [offset=0]
++     * @param {RequestInit} options - Fetch options
+      * @returns {Promise<NamedApiResourceList<T>>}
+      */
+-    Endpoint.prototype.list = function (limit, offset) {
++    Endpoint.prototype.list = function (limit, offset, options) {
+         if (limit === void 0) { limit = 20; }
+         if (offset === void 0) { offset = 0; }
+         return __awaiter(this, void 0, void 0, function () {
+@@ -113,7 +116,7 @@ var Endpoint = /** @class */ (function () {
+                     return [2 /*return*/, { count: count, next: next, previous: previous, results: results }];
+                 }
+                 params = new url_search_params_1.default({ limit: "" + limit, offset: "" + offset });
+-                return [2 /*return*/, cross_fetch_1.default(BASE_URI + "/" + this.resource + "?" + params).then(function (res) { return res.json(); })];
++                return [2 /*return*/, cross_fetch_1.default(BASE_URI + "/" + this.resource + "?" + params, options).then(function (res) { return res.json(); })];
+             });
+         });
+     };
+@@ -121,9 +124,10 @@ var Endpoint = /** @class */ (function () {
+      * Fetches the complete resource list from the API by making two calls.
+      * Caches the list by default for API-less pagination
+      * @param {boolean} [cache=true] - If the result should be cahced in-memory
++     * @param {RequestInit} options - Fetch options
+      * @returns {Promise<NamedApiResourceList<T>>}
+      */
+-    Endpoint.prototype.listAll = function (cache) {
++    Endpoint.prototype.listAll = function (cache, options) {
+         if (cache === void 0) { cache = true; }
+         return __awaiter(this, void 0, void 0, function () {
+             var count, data;
+@@ -133,10 +137,10 @@ var Endpoint = /** @class */ (function () {
+                         if (this._list) {
+                             return [2 /*return*/, this._list];
+                         }
+-                        return [4 /*yield*/, cross_fetch_1.default(BASE_URI + "/" + this.resource + "?limit=1").then(function (res) { return res.json(); })];
++                        return [4 /*yield*/, cross_fetch_1.default(BASE_URI + "/" + this.resource + "?limit=1", options).then(function (res) { return res.json(); })];
+                     case 1:
+                         count = (_a.sent()).count;
+-                        return [4 /*yield*/, cross_fetch_1.default(BASE_URI + "/" + this.resource + "?limit=" + count).then(function (res) { return res.json(); })];
++                        return [4 /*yield*/, cross_fetch_1.default(BASE_URI + "/" + this.resource + "?limit=" + count, options).then(function (res) { return res.json(); })];
+                     case 2:
+                         data = _a.sent();
+                         if (cache) {
+@@ -148,7 +152,7 @@ var Endpoint = /** @class */ (function () {
          });
      };
      Endpoint.prototype._cache = function (data) {
@@ -38,11 +153,46 @@ index c831481..df89466 100644
      };
      __decorate([
          enumerable_1.default
+diff --git a/node_modules/pokeapi-typescript/dist/classes/NamedEndpoint.d.ts b/node_modules/pokeapi-typescript/dist/classes/NamedEndpoint.d.ts
+index 48a7f94..e55e4c3 100644
+--- a/node_modules/pokeapi-typescript/dist/classes/NamedEndpoint.d.ts
++++ b/node_modules/pokeapi-typescript/dist/classes/NamedEndpoint.d.ts
+@@ -17,26 +17,26 @@ export declare class NamedEndpoint<T> extends Endpoint<T> {
+      * @param {boolean} [cache=true] - Whether or not to cache this resource
+      * @returns {Promise<T>}
+      */
+-    fetch(param: NamedEndpointParam, cache?: boolean): Promise<T>;
++    fetch(param: NamedEndpointParam, cache?: boolean, options?: RequestInit): Promise<T>;
+     /**
+      * Retrieve a resource from cache if it exists, or attempt to fetch it from the API
+      * @param {EndpointParam} param - The ID of the resource to resolve
+      * @returns {Promise<T>}
+      */
+-    resolve(param: NamedEndpointParam): Promise<T>;
++    resolve(param: NamedEndpointParam, options?: RequestInit): Promise<T>;
+     /**
+      * Fetches the paginated resource list from the API, or uses the internal cache if listAll() has been called.
+      * @param {number} [limit=20] - How many resources to list
+      * @param {offset} [offset=0]
+      * @returns {Promise<NamedApiResourceList<T>>}
+      */
+-    list(limit?: number, offset?: number): Promise<INamedApiResourceList<T>>;
++    list(limit?: number, offset?: number, options?: RequestInit): Promise<INamedApiResourceList<T>>;
+     /**
+      * Fetches the complete resource list from the API by making two calls.
+      * Caches the list by default for API-less pagination
+      * @param {boolean} [cache=true] - If the result should be cahced in-memory
+      * @returns {Promise<NamedApiResourceList<T>>}
+      */
+-    listAll(cache?: boolean): Promise<INamedApiResourceList<T>>;
++    listAll(cache?: boolean, options?: RequestInit): Promise<INamedApiResourceList<T>>;
+     _cache(data: any): void;
+ }
 diff --git a/node_modules/pokeapi-typescript/dist/classes/NamedEndpoint.js b/node_modules/pokeapi-typescript/dist/classes/NamedEndpoint.js
-index 813c8a0..9a3faa9 100644
+index 813c8a0..d9d14aa 100644
 --- a/node_modules/pokeapi-typescript/dist/classes/NamedEndpoint.js
 +++ b/node_modules/pokeapi-typescript/dist/classes/NamedEndpoint.js
-@@ -75,7 +75,7 @@ var NamedEndpoint = /** @class */ (function (_super) {
+@@ -75,15 +75,16 @@ var NamedEndpoint = /** @class */ (function (_super) {
       * @returns {?T}
       */
      NamedEndpoint.prototype.get = function (param) {
@@ -51,7 +201,88 @@ index 813c8a0..9a3faa9 100644
      };
      /**
       * Fetch a resource from the API
-@@ -165,8 +165,8 @@ var NamedEndpoint = /** @class */ (function (_super) {
+      * @param {NamedEndpointParam} param - The name orcID of the resource to fetch
+      * @param {boolean} [cache=true] - Whether or not to cache this resource
++     * @param {RequestInit} options - Fetch options
+      * @returns {Promise<T>}
+      */
+-    NamedEndpoint.prototype.fetch = function (param, cache) {
++    NamedEndpoint.prototype.fetch = function (param, cache, options) {
+         if (cache === void 0) { cache = true; }
+         return __awaiter(this, void 0, void 0, function () {
+             var data;
+@@ -91,7 +92,7 @@ var NamedEndpoint = /** @class */ (function (_super) {
+                 switch (_a.label) {
+                     case 0:
+                         param = typeof param === "string" ? param.toLowerCase() : param;
+-                        return [4 /*yield*/, cross_fetch_1.default(BASE_URI + "/" + this.resource + "/" + param).then(function (res) { return res.json(); })];
++                        return [4 /*yield*/, cross_fetch_1.default(BASE_URI + "/" + this.resource + "/" + param, options).then(function (res) { return res.json(); })];
+                     case 1:
+                         data = _a.sent();
+                         this._cache(data);
+@@ -103,12 +104,13 @@ var NamedEndpoint = /** @class */ (function (_super) {
+     /**
+      * Retrieve a resource from cache if it exists, or attempt to fetch it from the API
+      * @param {EndpointParam} param - The ID of the resource to resolve
++     * @param {RequestInit} options - Fetch options
+      * @returns {Promise<T>}
+      */
+-    NamedEndpoint.prototype.resolve = function (param) {
++    NamedEndpoint.prototype.resolve = function (param, options) {
+         return __awaiter(this, void 0, void 0, function () {
+             return __generator(this, function (_a) {
+-                return [2 /*return*/, this.get(param) || this.fetch(param)];
++                return [2 /*return*/, this.get(param) || this.fetch(param, undefined, options)];
+             });
+         });
+     };
+@@ -116,9 +118,10 @@ var NamedEndpoint = /** @class */ (function (_super) {
+      * Fetches the paginated resource list from the API, or uses the internal cache if listAll() has been called.
+      * @param {number} [limit=20] - How many resources to list
+      * @param {offset} [offset=0]
++     * @param {RequestInit} options - Fetch options
+      * @returns {Promise<NamedApiResourceList<T>>}
+      */
+-    NamedEndpoint.prototype.list = function (limit, offset) {
++    NamedEndpoint.prototype.list = function (limit, offset, options) {
+         if (limit === void 0) { limit = 20; }
+         if (offset === void 0) { offset = 0; }
+         return __awaiter(this, void 0, void 0, function () {
+@@ -130,7 +133,7 @@ var NamedEndpoint = /** @class */ (function (_super) {
+                     return [2 /*return*/, { count: count, next: next, previous: previous, results: results }];
+                 }
+                 params = new url_search_params_1.default({ limit: "" + limit, offset: "" + offset });
+-                return [2 /*return*/, cross_fetch_1.default(BASE_URI + "/" + this.resource + "?" + params).then(function (res) { return res.json(); })];
++                return [2 /*return*/, cross_fetch_1.default(BASE_URI + "/" + this.resource + "?" + params, options).then(function (res) { return res.json(); })];
+             });
+         });
+     };
+@@ -138,9 +141,10 @@ var NamedEndpoint = /** @class */ (function (_super) {
+      * Fetches the complete resource list from the API by making two calls.
+      * Caches the list by default for API-less pagination
+      * @param {boolean} [cache=true] - If the result should be cahced in-memory
++     * @param {RequestInit} options - Fetch options
+      * @returns {Promise<NamedApiResourceList<T>>}
+      */
+-    NamedEndpoint.prototype.listAll = function (cache) {
++    NamedEndpoint.prototype.listAll = function (cache, options) {
+         if (cache === void 0) { cache = true; }
+         return __awaiter(this, void 0, void 0, function () {
+             var count, data;
+@@ -150,10 +154,10 @@ var NamedEndpoint = /** @class */ (function (_super) {
+                         if (this._list) {
+                             return [2 /*return*/, this._list];
+                         }
+-                        return [4 /*yield*/, cross_fetch_1.default(BASE_URI + "/" + this.resource + "?limit=1").then(function (res) { return res.json(); })];
++                        return [4 /*yield*/, cross_fetch_1.default(BASE_URI + "/" + this.resource + "?limit=1", options).then(function (res) { return res.json(); })];
+                     case 1:
+                         count = (_a.sent()).count;
+-                        return [4 /*yield*/, cross_fetch_1.default(BASE_URI + "/" + this.resource + "?limit=" + count).then(function (res) { return res.json(); })];
++                        return [4 /*yield*/, cross_fetch_1.default(BASE_URI + "/" + this.resource + "?limit=" + count, options).then(function (res) { return res.json(); })];
+                     case 2:
+                         data = _a.sent();
+                         if (cache) {
+@@ -165,8 +169,8 @@ var NamedEndpoint = /** @class */ (function (_super) {
          });
      };
      NamedEndpoint.prototype._cache = function (data) {
