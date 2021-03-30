@@ -1,4 +1,4 @@
-import React, { FC, RefObject, useCallback, useRef } from 'react';
+import React, { FC, memo, RefObject, useCallback, useRef, useState } from 'react';
 import { Animated, LayoutChangeEvent, ScrollView, View } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
@@ -10,6 +10,7 @@ import Pressable from '!/components/Pressable';
 import usePress from '!/hooks/use-press';
 import { constants } from '!/services/theme';
 import { MainRouteProp } from '!/types';
+import getSpriteSilhouette from '!/utils/get-sprite-silhouette';
 
 import styles from './styles';
 
@@ -42,6 +43,11 @@ const HeaderInfo: FC<Props> = ({
   const { colors } = useTheme();
 
   const buttonWidths = useRef<number[]>([]);
+  const [pokemonSpriteError, setPokemonSpriteError] = useState(false);
+
+  const handlePokemonSpriteError = useCallback(() => {
+    setPokemonSpriteError(true);
+  }, []);
 
   const opacity = scrollY.interpolate({
     inputRange: [0, infoScrollDistance],
@@ -228,11 +234,19 @@ const HeaderInfo: FC<Props> = ({
           ))}
         </View>
 
-        {skipShared ? (
-          <FastImage source={{ uri: spriteUrl }} style={styles.spriteImage} />
+        {skipShared || pokemonSpriteError ? (
+          <FastImage
+            onError={handlePokemonSpriteError}
+            source={pokemonSpriteError ? getSpriteSilhouette() : { uri: spriteUrl }}
+            style={styles.spriteImage}
+          />
         ) : (
           <SharedElement id={`pokemon.sprite.${id}`}>
-            <FastImage source={{ uri: spriteUrl }} style={styles.spriteImage} />
+            <FastImage
+              onError={handlePokemonSpriteError}
+              source={pokemonSpriteError ? getSpriteSilhouette() : { uri: spriteUrl }}
+              style={styles.spriteImage}
+            />
           </SharedElement>
         )}
       </Animated.View>
@@ -250,4 +264,4 @@ const HeaderInfo: FC<Props> = ({
   );
 };
 
-export default HeaderInfo;
+export default memo(HeaderInfo);

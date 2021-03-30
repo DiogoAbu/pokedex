@@ -36,3 +36,15 @@ export type PokeApiEndpoint = keyof Omit<typeof PokeAPI, 'prototype'>;
 export type GenericOfPokeApi<E> = E extends Endpoint<infer X> ? X : never;
 
 export type BaseStatNames = 'hp' | 'attack' | 'defense' | 'special-attack' | 'special-defense' | 'speed';
+
+export type LearnMethodName =
+  | 'level-up'
+  | 'machine'
+  | 'egg'
+  | 'tutor'
+  | 'stadium-surfing-pikachu'
+  | 'light-ball-egg'
+  | 'colosseum-purification'
+  | 'xd-shadow'
+  | 'xd-purification'
+  | 'form-change';

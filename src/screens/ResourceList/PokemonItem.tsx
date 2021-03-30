@@ -1,10 +1,9 @@
-import React, { memo } from 'react';
-import { ListRenderItem, View } from 'react-native';
+import React, { FC, memo, useCallback, useState } from 'react';
+import { ListRenderItemInfo, View } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
-import SkeletonContent from 'react-native-skeleton-content-nonexpo';
 import { SharedElement } from 'react-navigation-shared-element';
-import { useNavigation, useTheme } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { IApiResource, IPokemon } from 'pokeapi-typescript';
 
 import CardBackground from '!/components/CardBackground';
@@ -16,10 +15,12 @@ import { constants } from '!/services/theme';
 import { MainNavigationProp } from '!/types';
 import getIdFromUrl from '!/utils/get-id-from-url';
 import getSpriteUrl from '!/utils/get-sprite-big';
+import getSpriteSilhouette from '!/utils/get-sprite-silhouette';
 import getTypeColor from '!/utils/get-type-color';
 
 import ChipType from '../../components/ChipType';
 
+import PokemonItemSkeleton from './PokemonItemSkeleton';
 import styles from './styles';
 
 const mutateDataPokemon = ({ id, name, types, species }: IPokemon): Partial<IPokemon> => ({
@@ -29,18 +30,22 @@ const mutateDataPokemon = ({ id, name, types, species }: IPokemon): Partial<IPok
   species,
 });
 
-const PokemonItem: ListRenderItem<IApiResource<IPokemon>> = ({ item }) => {
+const PokemonItem: FC<ListRenderItemInfo<IApiResource<IPokemon>> & { height: number }> = ({
+  item,
+  height,
+}) => {
   const navigation = useNavigation<MainNavigationProp<'ResourceList'>>();
-  const { colors } = useTheme();
 
-  const { data: pokemon, loading: loadingPokemon } = usePokeApi({
+  const [pokemonSpriteError, setPokemonSpriteError] = useState(false);
+
+  const { data: pokemon } = usePokeApi({
     endpoint: 'Pokemon',
     id: getIdFromUrl(item.url),
     page: undefined,
     mutateData: mutateDataPokemon,
   });
 
-  const { data: species, loading: loadingSpecies } = usePokeApi({
+  const { data: species } = usePokeApi({
     endpoint: 'PokemonSpecies',
     id: pokemon?.species?.url ? getIdFromUrl(pokemon.species.url) : undefined,
     page: undefined,
@@ -49,6 +54,10 @@ const PokemonItem: ListRenderItem<IApiResource<IPokemon>> = ({ item }) => {
 
   const backgroundColor = getTypeColor(pokemon?.types);
   const displayName = species?.names.find((e) => e.language.name === 'en')?.name;
+
+  const handlePokemonSpriteError = useCallback(() => {
+    setPokemonSpriteError(true);
+  }, []);
 
   const handleGoToDetails = usePress(() => {
     if (pokemon && species) {
@@ -66,61 +75,29 @@ const PokemonItem: ListRenderItem<IApiResource<IPokemon>> = ({ item }) => {
     }
   });
 
-  if (loadingPokemon || loadingSpecies) {
-    return (
-      <SkeletonContent
-        boneColor={colors.card}
-        containerStyle={[styles.skeletonContainer, { backgroundColor: colors.card }]}
-        duration={800}
-        highlightColor={colors.primary}
-        isLoading
-        layout={[
-          {
-            key: 'column',
-            children: [
-              {
-                key: 'title',
-                width: 192,
-                height: 24,
-                marginLeft: constants.gridSmall,
-                marginTop: constants.grid,
-              },
-              {
-                key: 'type',
-                width: 64,
-                height: 16,
-                marginLeft: constants.gridSmall,
-                marginTop: constants.grid,
-              },
-            ],
-          },
-          {
-            key: 'image',
-            width: 96,
-            height: 96,
-            borderRadius: 48,
-            marginBottom: constants.gridSmall,
-            alignSelf: 'flex-end',
-          },
-        ]}
-      />
-    );
-  }
-
   if (!pokemon || !species) {
-    return null;
+    return <PokemonItemSkeleton height={height} />;
   }
 
   return (
     <CardBackground
       backgroundColor={backgroundColor}
       onPress={pokemon ? handleGoToDetails : undefined}
-      outerStyle={styles.cardContainer}
+      outerStyle={{ height }}
       right
     >
       <SharedElement id={`pokemon.sprite.${pokemon.id!}`} style={styles.cardSpriteImageContainer}>
-        <FastImage source={{ uri: getSpriteUrl(pokemon.name!) }} style={styles.cardSpriteImage} />
+        <FastImage
+          onError={handlePokemonSpriteError}
+          source={{ uri: getSpriteUrl(pokemon.name!) }}
+          style={styles.cardSpriteImage}
+        />
       </SharedElement>
+      {pokemonSpriteError ? (
+        <View style={styles.cardSpriteImageContainer}>
+          <FastImage source={getSpriteSilhouette()} style={styles.cardSpriteImage} />
+        </View>
+      ) : null}
 
       <View style={styles.cardTopContainer}>
         <Text style={[styles.cardName, { color: constants.colors.white }]}>
@@ -145,4 +122,6 @@ const PokemonItem: ListRenderItem<IApiResource<IPokemon>> = ({ item }) => {
   );
 };
 
-export default memo(PokemonItem);
+export default memo(PokemonItem, (prev, next) => {
+  return prev.item.url === next.item.url;
+});

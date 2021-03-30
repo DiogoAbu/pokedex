@@ -6,7 +6,7 @@ export const constants = {
   grid,
   gridSmall: grid / 2,
   gridBig: grid * 2,
-  headerHeight: 80,
+  shimmerDuration: 800,
   colors: {
     white: '#ffffff',
     black: '#000000',

@@ -2,6 +2,8 @@ import React, { FC } from 'react';
 import { FlatList, Platform } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
+import SkeletonContent from 'react-native-skeleton-content-nonexpo';
+import { useTheme } from '@react-navigation/native';
 import { IPokemonSpecies } from 'pokeapi-typescript';
 
 import Separator from '!/components/Separator';
@@ -20,18 +22,16 @@ interface Props {
 }
 
 const Evolution: FC<Props> = ({ species, displayFooterImage }) => {
-  const { data: evolution } = usePokeApi({
+  const { colors } = useTheme();
+
+  const { data: evolution, loading } = usePokeApi({
     endpoint: 'EvolutionChain',
     id: getIdFromUrl(species.evolution_chain.url),
     page: undefined,
     mutateData: undefined,
   });
 
-  if (!evolution) {
-    return null;
-  }
-
-  const evolutionChain = getEvolutionChain(evolution);
+  const evolutionChain = evolution ? getEvolutionChain(evolution) : [];
 
   return (
     <>
@@ -41,7 +41,38 @@ const Evolution: FC<Props> = ({ species, displayFooterImage }) => {
         initialNumToRender={10}
         ItemSeparatorComponent={Separator}
         keyExtractor={(item) => item.fromSpecies.name + item.toSpecies.name}
-        ListEmptyComponent={<Text style={styles.tabEmptyText}>No evolution found!</Text>}
+        ListEmptyComponent={
+          loading || !evolution ? (
+            <SkeletonContent
+              boneColor={colors.card}
+              containerStyle={styles.evolutionContainer}
+              duration={constants.shimmerDuration}
+              highlightColor={colors.primary}
+              isLoading
+              layout={[
+                {
+                  key: 'pokemon-from',
+                  width: 96,
+                  height: 96,
+                  borderRadius: 96,
+                },
+                {
+                  key: 'condition',
+                  width: 64,
+                  height: constants.gridBig,
+                },
+                {
+                  key: 'pokemon-to',
+                  width: 96,
+                  height: 96,
+                  borderRadius: 96,
+                },
+              ]}
+            />
+          ) : (
+            <Text style={styles.tabEmptyText}>No evolution found!</Text>
+          )
+        }
         maxToRenderPerBatch={2}
         removeClippedSubviews={Platform.OS === 'android'}
         renderItem={(props) => <EvolutionItem {...props} />}

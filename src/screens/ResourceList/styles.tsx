@@ -26,14 +26,9 @@ const styles = StyleSheet.create({
   skeletonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    height: 160,
     paddingHorizontal: constants.grid,
     marginVertical: constants.gridSmall,
     borderRadius: constants.grid,
-  },
-
-  cardContainer: {
-    minHeight: 160,
   },
 
   cardTopContainer: {

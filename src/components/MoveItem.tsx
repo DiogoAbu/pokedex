@@ -8,12 +8,13 @@ import ChipType from '!/components/ChipType';
 import ListItem from '!/components/ListItem';
 import Text from '!/components/Text';
 import usePokeApi from '!/hooks/use-poke-api';
+import { LearnMethodName } from '!/types';
 import getIdFromUrl from '!/utils/get-id-from-url';
 import getTypeColor from '!/utils/get-type-color';
 
 const mutateDataMachineItem = ({ names }: IItem): Partial<IItem> => ({ names });
 
-const MoveItem: ListRenderItem<IPokemonMove> = ({ item }) => {
+const MoveItem: ListRenderItem<IPokemonMove> = ({ item, index }) => {
   const { data: move } = usePokeApi({
     endpoint: 'Move',
     id: getIdFromUrl(item.move.url),
@@ -33,12 +34,8 @@ const MoveItem: ListRenderItem<IPokemonMove> = ({ item }) => {
     mutateData: mutateDataMachineItem,
   });
 
-  if (!move) {
-    return null;
-  }
-
-  const backgroundColor = getTypeColor(move.type.name);
-  const learnMethodName = item.version_group_details[0].move_learn_method.name;
+  const backgroundColor = getTypeColor(move?.type.name);
+  const learnMethodName = item.version_group_details[0].move_learn_method.name as LearnMethodName;
 
   let learn = '...';
   if (learnMethodName === 'level-up') {
@@ -52,16 +49,21 @@ const MoveItem: ListRenderItem<IPokemonMove> = ({ item }) => {
     learn = `Learn by tutoring`;
   }
 
+  if (!move && index >= 10) {
+    return null;
+  }
+
   return (
     <ListItem
+      loading={!move && index < 10}
       renderCenter={
         <>
           <Text style={styles.moveItemName}>{move?.names.find((e) => e.language.name === 'en')?.name}</Text>
           <Text>{learn}</Text>
         </>
       }
-      renderLeft={<Badge>{move.generation.name.split('-').pop()?.toUpperCase()}</Badge>}
-      renderRight={<ChipType containerStyle={{ backgroundColor }} type={move.type} />}
+      renderLeft={<Badge>{move?.generation.name.split('-').pop()?.toUpperCase()}</Badge>}
+      renderRight={<ChipType containerStyle={{ backgroundColor }} type={move?.type} />}
     />
   );
 };
@@ -73,4 +75,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(MoveItem);
+export default memo(MoveItem, (prev, next) => {
+  return prev.item.move.url === next.item.move.url;
+});

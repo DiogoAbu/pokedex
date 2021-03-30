@@ -16,7 +16,7 @@ const AboutSkeleton: FC = () => {
     <SkeletonContent
       boneColor={colors.card}
       containerStyle={[styles.aboutSkeleton, { width: layout.width }]}
-      duration={800}
+      duration={constants.shimmerDuration}
       highlightColor={colors.primary}
       isLoading
       layout={[

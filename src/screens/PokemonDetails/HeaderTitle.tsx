@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import { Animated } from 'react-native';
 
 import { useRoute } from '@react-navigation/core';
@@ -81,4 +81,4 @@ const HeaderTitle: FC<Props> = ({ scrollY, statusBarHeight, maxHeight, scrollDis
   );
 };
 
-export default HeaderTitle;
+export default memo(HeaderTitle);

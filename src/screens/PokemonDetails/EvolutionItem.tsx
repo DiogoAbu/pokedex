@@ -152,4 +152,9 @@ function getEvolutionConditions(condition: IEvolutionDetail) {
   return entries;
 }
 
-export default memo(EvolutionItem);
+export default memo(EvolutionItem, (prev, next) => {
+  return (
+    prev.item.fromSpecies.url === next.item.fromSpecies.url ||
+    prev.item.toSpecies.url === next.item.toSpecies.url
+  );
+});

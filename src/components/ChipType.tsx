@@ -22,11 +22,11 @@ const ChipType: FC<Props> = ({ type, ...rest }) => {
 
   const name = data?.names?.find((e) => e.language.name === 'en')?.name;
 
-  if (!name) {
-    return null;
-  }
-
-  return <Chip {...rest}>{name}</Chip>;
+  return (
+    <Chip loading={!name} {...rest}>
+      {name}
+    </Chip>
+  );
 };
 
 export default ChipType;

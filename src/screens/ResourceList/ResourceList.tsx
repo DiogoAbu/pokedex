@@ -18,9 +18,19 @@ import { getHeaderHeight } from '!/utils/get-header-height';
 import getResourceName from '!/utils/get-resource-name';
 
 import PokemonItem from './PokemonItem';
+import PokemonItemSkeleton from './PokemonItemSkeleton';
 import styles from './styles';
 
+const ITEM_HEIGHT = 160;
+const MARGIN_VERTICAL = 8;
+
 const keyExtractor = (item: IApiResource<IPokemon>, index: number) => item.url + index.toString();
+
+const getItemLayout = (_item: any, index: number) => ({
+  length: ITEM_HEIGHT + MARGIN_VERTICAL * 2,
+  offset: ITEM_HEIGHT + MARGIN_VERTICAL * 2 * index,
+  index,
+});
 
 const ResourceList: FC = () => {
   const navigation = useNavigation<MainNavigationProp<'ResourceList'>>();
@@ -80,8 +90,16 @@ const ResourceList: FC = () => {
       <Animated.FlatList
         contentContainerStyle={[styles.contentContainer, { paddingTop: HEADER_HEIGHT + constants.grid }]}
         data={data?.results}
+        getItemLayout={getItemLayout}
         initialNumToRender={10}
         keyExtractor={keyExtractor}
+        ListEmptyComponent={
+          <>
+            {[...Array(10)].map((_each, index) => (
+              <PokemonItemSkeleton height={ITEM_HEIGHT} key={'skel' + index.toString()} />
+            ))}
+          </>
+        }
         ListFooterComponent={data?.next ? <LoadingPokeball /> : null}
         maxToRenderPerBatch={2}
         onEndReached={fetchNextPage}
@@ -90,7 +108,7 @@ const ResourceList: FC = () => {
           useNativeDriver: true,
         })}
         removeClippedSubviews={Platform.OS === 'android'}
-        renderItem={(props) => <PokemonItem {...props} />}
+        renderItem={(props) => <PokemonItem {...props} height={ITEM_HEIGHT} />}
         scrollEventThrottle={16}
         updateCellsBatchingPeriod={100}
         windowSize={16}
