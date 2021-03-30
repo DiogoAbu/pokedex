@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
 import { useTheme } from '@react-navigation/native';
@@ -7,20 +7,21 @@ import { useTheme } from '@react-navigation/native';
 import { constants } from '!/services/theme';
 
 export interface ListItemProps {
+  loading?: boolean;
   renderCenter?: React.ReactElement;
   renderLeft?: React.ReactElement;
   renderRight?: React.ReactElement;
-  loading?: boolean;
+  containerStyle?: StyleProp<ViewStyle>;
 }
 
-const ListItem: FC<ListItemProps> = ({ renderCenter, renderLeft, renderRight, loading }) => {
+const ListItem: FC<ListItemProps> = ({ loading, renderCenter, renderLeft, renderRight, containerStyle }) => {
   const { colors } = useTheme();
 
   if (loading) {
     return (
       <SkeletonContent
         boneColor={colors.card}
-        containerStyle={styles.container}
+        containerStyle={[styles.container, containerStyle]}
         duration={constants.shimmerDuration}
         highlightColor={colors.primary}
         isLoading
@@ -62,7 +63,7 @@ const ListItem: FC<ListItemProps> = ({ renderCenter, renderLeft, renderRight, lo
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       {renderLeft ? <View style={styles.containerLeft}>{renderLeft}</View> : null}
       {renderCenter ? <View style={styles.containerCenter}>{renderCenter}</View> : null}
       {renderRight ? <View style={styles.containerRight}>{renderRight}</View> : null}

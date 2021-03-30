@@ -11,4 +11,7 @@ it('renders/navigates throughout app screens', async () => {
   // Check what is rendered
   const welcomeText = await findByTestId('home-title');
   expect(welcomeText).not.toBeNull();
+
+  const teamListEmpty = await findByTestId('team-list-empty');
+  expect(teamListEmpty).not.toBeNull();
 });

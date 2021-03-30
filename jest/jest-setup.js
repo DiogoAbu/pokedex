@@ -44,3 +44,20 @@ jest.mock('react-native-safe-area-context', () => {
     useSafeAreaInsets: () => inset,
   };
 });
+
+jest.mock('react-native-snackbar', () => ({}));
+
+// jest.mock('react-native-mmkv', () => {
+//   const MMKV = {
+//     INTERNAL_MOCK_STORAGE: {},
+
+//     getString: jest.fn((key) => {
+//       return MMKV.INTERNAL_MOCK_STORAGE[key] ?? undefined;
+//     }),
+//     set: jest.fn((key, value) => {
+//       MMKV.INTERNAL_MOCK_STORAGE[key] = value;
+//     }),
+//   };
+
+//   return { MMKV };
+// });

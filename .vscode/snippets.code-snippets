@@ -46,5 +46,23 @@
     "prefix": "usePokeApi",
     "body": ["const { data$2 } = usePokeApi$1({ endpoint: '$3' });$0"],
     "description": "usePokeApi"
+  },
+  "react-fc-with-interface-props": {
+    "scope": "typescript,typescriptreact",
+    "prefix": "rfaceip",
+    "body": [
+      "import React, { FC } from 'react';",
+      "",
+      "export interface ${1:${TM_FILENAME_BASE}}Props {}",
+      "",
+      "const ${1:${TM_FILENAME_BASE}}: FC<${1:${TM_FILENAME_BASE}}Props> = () => {",
+      "\treturn (",
+      "\t\t$0",
+      "\t);",
+      "};",
+      "",
+      "export default ${1:${TM_FILENAME_BASE}};",
+      ""
+    ]
   }
 }

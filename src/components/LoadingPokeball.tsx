@@ -1,46 +1,54 @@
 import React, { FC } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ImageStyle, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
 import Animated, { concat } from 'react-native-reanimated';
 import { useTheme } from '@react-navigation/native';
 
-import { constants } from '!/services/theme';
 import { loop } from '!/utils/loop';
 
 const FastImageAnim = Animated.createAnimatedComponent(FastImage);
 
-const LoadingPokeball: FC = () => {
+interface LoadingPokeballProps {
+  size?: number;
+  tintColor?: string;
+  containerStyle?: StyleProp<ViewStyle>;
+  imageStyle?: StyleProp<ImageStyle>;
+}
+
+const LoadingPokeball: FC<LoadingPokeballProps> = ({ size, tintColor, containerStyle, imageStyle }) => {
   const { colors } = useTheme();
 
   const rotateZ = loop({ value: 0, toValue: 360 });
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       <FastImageAnim
         source={require('!/assets/pokeball.png')}
         style={[
-          styles.image,
           {
-            transform: [{ rotateZ: concat(rotateZ, 'deg') }] as any,
+            width: size,
+            height: size,
+          },
+          imageStyle,
+          {
+            transform: [{ rotateZ: concat(rotateZ, 'deg') }],
           },
         ]}
-        tintColor={colors.border}
+        tintColor={tintColor ?? colors.border}
       />
     </View>
   );
 };
 
+LoadingPokeball.defaultProps = {
+  size: 32,
+};
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: constants.grid,
-  },
-  image: {
-    width: 32,
-    height: 32,
   },
 });
 

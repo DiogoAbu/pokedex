@@ -7,32 +7,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
 
-  imagePokeball: {
-    opacity: 0.1,
-    position: 'absolute',
-    top: -60,
-    right: -96,
-    width: 256,
-    height: 256,
-  },
-
-  title: {
-    fontWeight: 'bold',
-    fontSize: 32,
-  },
-
-  searchbar: {
-    marginTop: constants.grid,
-    marginBottom: constants.gridBig,
-  },
-
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-  },
-
-  card: {
+  headerContainer: {
     borderBottomEndRadius: constants.grid,
     borderBottomStartRadius: constants.grid,
     shadowColor: constants.colors.black,
@@ -40,6 +15,67 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 4,
+  },
+  headerTitle: {
+    fontWeight: 'bold',
+    fontSize: 32,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+  },
+
+  contentTitle: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    marginTop: constants.gridBig,
+    marginBottom: constants.grid,
+    marginLeft: constants.gridSmall / 2,
+  },
+  emptyTeamText: {
+    textAlign: 'center',
+    margin: constants.grid,
+  },
+
+  pokemonTeamSeparator: {
+    backgroundColor: constants.colors.black,
+    opacity: 0.2,
+  },
+  pokemonTeamContainer: {
+    paddingVertical: constants.gridSmall,
+  },
+  pokemonTeamRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  pokemonTeamSpriteContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pokemonTeamName: {
+    fontSize: 16,
+  },
+  pokemonTeamSprite: {
+    width: 64,
+    height: 64,
+  },
+  pokemonTeamPokeballContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pokemonTeamPokeball: {
+    width: 48,
+    height: 48,
+    opacity: 0.1,
+  },
+
+  searchListItemTitle: {
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 

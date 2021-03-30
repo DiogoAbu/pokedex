@@ -105,7 +105,7 @@ const ResourceList: FC = () => {
             ))}
           </>
         }
-        ListFooterComponent={data?.next ? <LoadingPokeball /> : null}
+        ListFooterComponent={data?.next ? <LoadingPokeball containerStyle={styles.loadingPokeball} /> : null}
         maxToRenderPerBatch={2}
         onEndReached={fetchNextPage}
         onEndReachedThreshold={0.2}

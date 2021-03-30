@@ -1,16 +1,13 @@
 import React from 'react';
-import { StyleProp, StyleSheet, TextProps, View, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import Animated, { Easing, timing, Value } from 'react-native-reanimated';
 
-import Icon from './Icon';
+import Icon, { IconProps } from './Icon';
 
 const ANIM_SCALE = 1;
 
-interface Props extends TextProps {
-  name: string;
-  size?: number;
-  color?: string;
+interface Props extends IconProps {
   visible: boolean;
   containerStyle?: StyleProp<ViewStyle>;
 }

@@ -78,42 +78,19 @@ export default function usePokeApi<
           return;
         }
 
-        let responseData: ResponseData | null = null;
-        const storageKey = getStorageKey({ endpoint, id, page });
+        // Start abort timeout
+        const abortTimeoutHandler = setTimeout(() => {
+          abortController.current?.abort();
+        }, FETCH_TIMEOUT);
 
-        try {
-          // Read from storage
-          const dataStored = storage.getString(storageKey);
-          if (!dataStored) {
-            // Storage invalid, get from api
-            throw new Error('Data from storage is invalid');
-          }
-          // Got data
-          responseData = JSON.parse(dataStored);
-        } catch {
-          // Start abort timeout
-          const abortTimeoutHandler = setTimeout(() => {
-            abortController.current?.abort();
-          }, FETCH_TIMEOUT);
+        let responseData: ResponseData | null = await resolve<ResponseData>({
+          endpoint,
+          id,
+          page,
+          fetchOptions,
+        });
 
-          // Get from api
-          if (id) {
-            // Fetch by id
-            responseData = await apiFetch({ endpoint, id, fetchOptions });
-          } else if (typeof page === 'number') {
-            if (page === 0) {
-              // Fetch all results
-              responseData = (await apiListAll({ endpoint, fetchOptions })) as ResponseData;
-            } else if (page > 0) {
-              // Fetch results by page
-              responseData = (await apiList({ endpoint, page, fetchOptions })) as ResponseData;
-            }
-          }
-
-          clearTimeout(abortTimeoutHandler);
-          // Write to storage
-          storage.set(storageKey, JSON.stringify(responseData));
-        }
+        clearTimeout(abortTimeoutHandler);
 
         if (responseData && mutateData) {
           responseData = mutateData(responseData as Required<ResponseData>);
@@ -193,10 +170,63 @@ export default function usePokeApi<
   };
 }
 
+export async function resolve<ResponseData = any>({
+  endpoint,
+  id,
+  page,
+  fetchOptions,
+}: {
+  endpoint: PokeApiEndpoint;
+  id?: number;
+  page?: number;
+  fetchOptions?: RequestInit;
+}): Promise<ResponseData | null> {
+  let responseData: ResponseData | null = null;
+  const storageKey = getStorageKey({ endpoint, id, page });
+
+  try {
+    // Read from storage
+    const dataStored = storage.getString(storageKey);
+    if (!dataStored) {
+      // Storage invalid, get from api
+      throw new Error('Data from storage is invalid');
+    }
+    // Got data
+    responseData = JSON.parse(dataStored);
+  } catch {
+    // Get from api
+    if (id) {
+      // Fetch by id
+      responseData = await apiFetch({ endpoint, id, fetchOptions });
+    } else if (typeof page === 'number') {
+      if (page === 0) {
+        // Fetch all results
+        responseData = (await apiListAll({ endpoint, fetchOptions })) as any;
+      } else if (page > 0) {
+        // Fetch results by page
+        responseData = (await apiList({ endpoint, page, fetchOptions })) as any;
+      }
+    }
+
+    // Write to storage
+    storage.set(storageKey, JSON.stringify(responseData));
+  }
+
+  return responseData;
+}
+
 /**
  * Build key used to store data
  */
-function getStorageKey({ endpoint, id, page }: { endpoint: string; id?: number; page?: number }): string {
+function getStorageKey({
+  endpoint,
+  id,
+  page,
+}: {
+  endpoint: PokeApiEndpoint;
+  id?: number;
+  page?: number;
+}): string {
   if (page) {
     return `${endpoint}?page=${String(page)}`;
   }
@@ -211,9 +241,9 @@ async function apiFetch({
   id,
   fetchOptions,
 }: {
-  endpoint: string;
+  endpoint: PokeApiEndpoint;
   id: number;
-  fetchOptions: RequestInit;
+  fetchOptions?: RequestInit;
 }) {
   // @ts-ignore
   const api = PokeAPI[endpoint] as EndpointClass<any>;
@@ -228,9 +258,9 @@ async function apiList({
   page,
   fetchOptions,
 }: {
-  endpoint: string;
+  endpoint: PokeApiEndpoint;
   page: number;
-  fetchOptions: RequestInit;
+  fetchOptions?: RequestInit;
 }) {
   // @ts-ignore
   const api = PokeAPI[endpoint] as EndpointClass<any>;
@@ -241,7 +271,13 @@ async function apiList({
 /**
  * Make api call to PokéAPI fetching all results for the endpoint
  */
-async function apiListAll({ endpoint, fetchOptions }: { endpoint: string; fetchOptions: RequestInit }) {
+async function apiListAll({
+  endpoint,
+  fetchOptions,
+}: {
+  endpoint: PokeApiEndpoint;
+  fetchOptions?: RequestInit;
+}) {
   // @ts-ignore
   const api = PokeAPI[endpoint] as EndpointClass<any>;
   return api.listAll(false, fetchOptions);

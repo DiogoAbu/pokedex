@@ -10,6 +10,7 @@ import Home from '!/screens/Home/Home';
 jest.mock('@react-navigation/core', () => ({
   createNavigatorFactory: jest.fn(),
   useNavigation: jest.fn(),
+  useFocusEffect: jest.fn(),
 }));
 
 jest.mock('@react-navigation/stack', () => ({

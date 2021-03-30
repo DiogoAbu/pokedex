@@ -56,6 +56,11 @@ const styles = StyleSheet.create({
     width: 128,
     height: 128,
   },
+
+  loadingPokeball: {
+    flex: 1,
+    margin: constants.grid,
+  },
 });
 
 export default styles;
