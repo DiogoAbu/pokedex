@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { ListRenderItem, View } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
+import SkeletonContent from 'react-native-skeleton-content-nonexpo';
 import { useNavigation } from '@react-navigation/core';
 import { useTheme } from '@react-navigation/native';
 import { IEvolutionDetail, IPokemon, IPokemonSpecies } from 'pokeapi-typescript';
@@ -11,6 +12,7 @@ import Pressable from '!/components/Pressable';
 import Text from '!/components/Text';
 import usePokeApi from '!/hooks/use-poke-api';
 import usePress from '!/hooks/use-press';
+import { constants } from '!/services/theme';
 import { MainNavigationProp } from '!/types';
 import capitalize from '!/utils/capitalize';
 import { EvolutionChainOne } from '!/utils/get-evolution-chain';
@@ -99,7 +101,34 @@ const EvolutionItem: ListRenderItem<Required<EvolutionChainOne>> = ({ item: evol
   });
 
   if (!fromPokemon || !toPokemon || !fromDisplayName || !toDisplayName) {
-    return null;
+    return (
+      <SkeletonContent
+        boneColor={colors.card}
+        containerStyle={styles.evolutionContainer}
+        duration={constants.shimmerDuration}
+        highlightColor={colors.primary}
+        isLoading
+        layout={[
+          {
+            key: 'pokemon-from',
+            width: 96,
+            height: 96,
+            borderRadius: 96,
+          },
+          {
+            key: 'condition',
+            width: 64,
+            height: constants.gridBig,
+          },
+          {
+            key: 'pokemon-to',
+            width: 96,
+            height: 96,
+            borderRadius: 96,
+          },
+        ]}
+      />
+    );
   }
 
   const conditions = getEvolutionConditions(evolution.condition);

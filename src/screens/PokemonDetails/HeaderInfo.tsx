@@ -1,4 +1,4 @@
-import React, { FC, memo, RefObject, useCallback, useRef, useState } from 'react';
+import React, { FC, RefObject, useCallback, useRef, useState } from 'react';
 import { Animated, LayoutChangeEvent, ScrollView, View } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
@@ -264,4 +264,4 @@ const HeaderInfo: FC<Props> = ({
   );
 };
 
-export default memo(HeaderInfo);
+export default HeaderInfo;

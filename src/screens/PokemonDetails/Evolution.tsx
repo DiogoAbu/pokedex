@@ -35,51 +35,49 @@ const Evolution: FC<Props> = ({ species, displayFooterImage }) => {
 
   return (
     <>
-      <FlatList
-        contentContainerStyle={{ padding: constants.grid }}
-        data={evolutionChain.filter((item) => item.fromSpecies) as Required<EvolutionChainOne>[]}
-        initialNumToRender={10}
-        ItemSeparatorComponent={Separator}
-        keyExtractor={(item) => item.fromSpecies.name + item.toSpecies.name}
-        ListEmptyComponent={
-          loading || !evolution ? (
-            <SkeletonContent
-              boneColor={colors.card}
-              containerStyle={styles.evolutionContainer}
-              duration={constants.shimmerDuration}
-              highlightColor={colors.primary}
-              isLoading
-              layout={[
-                {
-                  key: 'pokemon-from',
-                  width: 96,
-                  height: 96,
-                  borderRadius: 96,
-                },
-                {
-                  key: 'condition',
-                  width: 64,
-                  height: constants.gridBig,
-                },
-                {
-                  key: 'pokemon-to',
-                  width: 96,
-                  height: 96,
-                  borderRadius: 96,
-                },
-              ]}
-            />
-          ) : (
-            <Text style={styles.tabEmptyText}>No evolution found!</Text>
-          )
-        }
-        maxToRenderPerBatch={2}
-        removeClippedSubviews={Platform.OS === 'android'}
-        renderItem={(props) => <EvolutionItem {...props} />}
-        scrollEventThrottle={16}
-        updateCellsBatchingPeriod={100}
-        windowSize={16}
-      />
+      {loading || !evolution ? (
+        <SkeletonContent
+          boneColor={colors.card}
+          containerStyle={styles.evolutionContainer}
+          duration={constants.shimmerDuration}
+          highlightColor={colors.primary}
+          isLoading
+          layout={[
+            {
+              key: 'pokemon-from',
+              width: 96,
+              height: 96,
+              borderRadius: 96,
+            },
+            {
+              key: 'condition',
+              width: 64,
+              height: constants.gridBig,
+            },
+            {
+              key: 'pokemon-to',
+              width: 96,
+              height: 96,
+              borderRadius: 96,
+            },
+          ]}
+        />
+      ) : (
+        <FlatList
+          contentContainerStyle={{ padding: constants.grid }}
+          data={evolutionChain.filter((item) => item.fromSpecies) as Required<EvolutionChainOne>[]}
+          initialNumToRender={10}
+          ItemSeparatorComponent={Separator}
+          keyExtractor={(item) => item.fromSpecies.name + item.toSpecies.name}
+          ListEmptyComponent={evolution ? null : <Text style={styles.tabEmptyText}>No evolution found!</Text>}
+          maxToRenderPerBatch={2}
+          removeClippedSubviews={Platform.OS === 'android'}
+          renderItem={(props) => <EvolutionItem {...props} />}
+          scrollEventThrottle={16}
+          updateCellsBatchingPeriod={100}
+          windowSize={16}
+        />
+      )}
 
       {displayFooterImage ? (
         <FastImage resizeMode='contain' source={require('!/assets/snorlax.png')} style={styles.footerImage} />

@@ -37,6 +37,7 @@ const PokemonItemSkeleton: FC<PokemonItemSkeletonProps> = ({ height, isLoading }
               key: 'type',
               width: 64,
               height: 22,
+              borderRadius: 200,
               marginLeft: constants.gridSmall,
               marginTop: constants.grid,
             },

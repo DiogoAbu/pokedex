@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { MMKV as storage } from 'react-native-mmkv';
-import Bottleneck from 'bottleneck';
+import Snackbar from 'react-native-snackbar';
 import PokeAPI, { Endpoint as EndpointClass, IApiResourceList } from 'pokeapi-typescript';
 
 import limiter from '!/services/limiter';
 import { GenericOfPokeApi, PokeApiEndpoint } from '!/types';
+import { dismissSingletonSnackbar, showSingletonSnackbar } from '!/utils/show-singleton-snackbar';
 
 const LIST_LIMIT = 20;
-const FETCH_TIMEOUT = 15000;
+const FETCH_TIMEOUT = 60000;
 
 type OneOrMany<Page, ResponseData> = Page extends number ? IApiResourceList<ResponseData> : ResponseData;
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -41,7 +42,7 @@ export default function usePokeApi<
 
   const makeRequest = useCallback(() => {
     if (!isMounted.current) {
-      console.log('NOT MOUNTED -> Stopping request');
+      // console.log('NOT MOUNTED -> Stopping request');
       return () => {
         isMounted.current = false;
         abortController.current?.abort();
@@ -73,7 +74,7 @@ export default function usePokeApi<
     limiter
       .schedule({ priority }, async () => {
         if (!isMounted.current) {
-          console.log('NOT MOUNTED -> Skipping data retrieval');
+          // console.log('NOT MOUNTED -> Skipping data retrieval');
           return;
         }
 
@@ -119,10 +120,10 @@ export default function usePokeApi<
         }
 
         if (!isMounted.current) {
-          console.log('NOT MOUNTED -> Skipping set data');
+          // console.log('NOT MOUNTED -> Skipping set data');
           return;
         }
-        console.log('MOUNTED -> Setting response data');
+        // console.log('MOUNTED -> Setting response data');
 
         requestAnimationFrame(() => {
           setLoading(false);
@@ -144,15 +145,28 @@ export default function usePokeApi<
       })
       .catch((err) => {
         // API fetch error
-        console.log('API fetch error', {
-          'limiter error': err instanceof Bottleneck.BottleneckError,
-          'abort error': err.name === 'AbortError',
+        console.log('API fetch error', endpoint, `id: ${String(id)}`, `page: ${String(page)}`, err);
+
+        let text = 'Some data could not be retrieved. Please, check you internet connection.';
+        if (err.name === 'SyntaxError') {
+          text = 'The API returned invalid data. Please, try again later.';
+        } else if (err.name === 'AbortError') {
+          text = 'The API took too long to respond. Please, try again later.';
+        }
+
+        showSingletonSnackbar({
+          text,
+          numberOfLines: 4,
+          duration: Snackbar.LENGTH_INDEFINITE,
+          action: {
+            text: 'OK',
+            onPress: () => dismissSingletonSnackbar(),
+          },
         });
-        console.error(err);
 
         requestAnimationFrame(() => {
           if (!isMounted.current) {
-            console.log('NOT MOUNTED -> Skipping set error');
+            // console.log('NOT MOUNTED -> Skipping set error');
             return;
           }
           setLoading(false);

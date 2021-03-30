@@ -22,15 +22,15 @@ import PokemonItemSkeleton from './PokemonItemSkeleton';
 import styles from './styles';
 
 const ITEM_HEIGHT = 160;
-const MARGIN_VERTICAL = 8;
+// const MARGIN_VERTICAL = 8;
 
 const keyExtractor = (item: IApiResource<IPokemon>, index: number) => item.url + index.toString();
 
-const getItemLayout = (_item: any, index: number) => ({
-  length: ITEM_HEIGHT + MARGIN_VERTICAL * 2,
-  offset: ITEM_HEIGHT + MARGIN_VERTICAL * 2 * index,
-  index,
-});
+// const getItemLayout = (_item: any, index: number) => ({
+//   length: ITEM_HEIGHT + MARGIN_VERTICAL * 2,
+//   offset: ITEM_HEIGHT + MARGIN_VERTICAL * 2 * index,
+//   index,
+// });
 
 const ResourceList: FC = () => {
   const navigation = useNavigation<MainNavigationProp<'ResourceList'>>();
@@ -38,7 +38,12 @@ const ResourceList: FC = () => {
   const layout = useWindowDimensions();
 
   const [page, setPage] = useState(1);
-  const { data } = usePokeApi({ endpoint: 'Pokemon', page, priority: 1 });
+  const { data } = usePokeApi({
+    endpoint: 'Pokemon',
+    id: undefined,
+    page,
+    priority: 1,
+  });
 
   const scrollY = useRef(new Animated.Value(0)).current;
   const HEADER_HEIGHT = getHeaderHeight(layout) - getStatusBarHeight();
@@ -90,7 +95,7 @@ const ResourceList: FC = () => {
       <Animated.FlatList
         contentContainerStyle={[styles.contentContainer, { paddingTop: HEADER_HEIGHT + constants.grid }]}
         data={data?.results}
-        getItemLayout={getItemLayout}
+        // getItemLayout={getItemLayout}
         initialNumToRender={10}
         keyExtractor={keyExtractor}
         ListEmptyComponent={

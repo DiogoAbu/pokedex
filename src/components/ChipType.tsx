@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 
 import { INamedApiResource, IType } from 'pokeapi-typescript';
 
@@ -29,4 +29,6 @@ const ChipType: FC<Props> = ({ type, ...rest }) => {
   );
 };
 
-export default ChipType;
+export default memo(ChipType, (prev, next) => {
+  return prev.type?.url !== next.type?.url || prev.loading !== next.loading;
+});

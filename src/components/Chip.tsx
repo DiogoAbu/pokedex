@@ -16,10 +16,11 @@ const Chip: FC<ChipProps> = ({ children, containerStyle, style, loading }) => {
   const { colors } = useTheme();
 
   if (loading) {
+    const backgroundColor = 'transparent';
     return (
       <SkeletonContent
-        boneColor={colors.card}
-        containerStyle={[styles.skeletonContainer, containerStyle]}
+        boneColor='transparent'
+        containerStyle={[styles.skeletonContainer, containerStyle, { backgroundColor }]}
         duration={constants.shimmerDuration}
         highlightColor={colors.primary}
         isLoading
@@ -28,6 +29,7 @@ const Chip: FC<ChipProps> = ({ children, containerStyle, style, loading }) => {
             key: 'chip',
             width: 64,
             height: 22,
+            borderRadius: 200,
           },
         ]}
       />
