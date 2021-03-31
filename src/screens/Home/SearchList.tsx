@@ -3,7 +3,7 @@ import { FlatList } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Bottleneck from 'bottleneck';
-import { IApiResource } from 'pokeapi-typescript';
+import { IApiResource, IName, IPokemonSpecies } from 'pokeapi-typescript';
 import stringSimilarity from 'string-similarity';
 
 import Icon from '!/components/Icon';
@@ -21,16 +21,12 @@ const limiter = new Bottleneck({
   maxConcurrent: 3,
 });
 
-limiter.on('error', (err) => {
-  console.log('Limiter error', err);
-});
+const keyExtractor = (item: SearchResult) => `${item.type}/${item.name}/${String(item.id)}`;
 
-const keyExtractor = (item: Partial<ResultData>) => String(item.id);
-
-type ResultData = {
+type SearchResult = {
   id: number;
   name: string;
-  type: PokeApiEndpoint;
+  type: string;
 };
 
 export interface SearchListProps {
@@ -62,7 +58,7 @@ const SearchList: FC<SearchListProps> = ({ searchQuery, setIsSearchbarLoading })
     page: 0,
   });
 
-  const [results, setResults] = useState<ResultData[]>([]);
+  const [results, setResults] = useState<SearchResult[]>([]);
 
   useEffect(() => {
     setResults([]);
@@ -112,7 +108,7 @@ const SearchList: FC<SearchListProps> = ({ searchQuery, setIsSearchbarLoading })
           renderCenter={
             <>
               <Text style={styles.searchListItemTitle}>{item.name}</Text>
-              <Text>{endpointToName(item.type)}</Text>
+              <Text>{item.type}</Text>
             </>
           }
           renderRight={<Icon name='chevron-right' size={32} />}
@@ -128,10 +124,11 @@ async function getResults(
   searchQuery: string,
   endpoint: PokeApiEndpoint,
   results: IApiResource<any>[],
-  setResults: React.Dispatch<React.SetStateAction<ResultData[]>>,
+  setResults: React.Dispatch<React.SetStateAction<SearchResult[]>>,
   setIsSearchbarLoading: React.Dispatch<React.SetStateAction<boolean>>,
-) {
+): Promise<void> {
   try {
+    // No query, so we have no results
     if (!searchQuery) {
       setIsSearchbarLoading(false);
       setResults([]);
@@ -139,7 +136,13 @@ async function getResults(
     }
 
     const resultsFound = await limiter.schedule(async () => {
-      const tasks = resolveList(searchQuery, endpoint, results);
+      setIsSearchbarLoading(true);
+
+      // For each api result get search result data
+      const tasks = results.map(async (each) => {
+        return resolveOneResource(each, searchQuery, endpoint);
+      });
+
       return Promise.all(tasks);
     });
 
@@ -147,8 +150,8 @@ async function getResults(
     requestAnimationFrame(() => {
       setResults((prev) =>
         [...prev, ...resultsFound.filter(notEmpty)].sort((a, b) => {
-          const scoreA = stringSimilarity.compareTwoStrings(searchQuery, a.name!);
-          const scoreB = stringSimilarity.compareTwoStrings(searchQuery, b.name!);
+          const scoreA = stringSimilarity.compareTwoStrings(searchQuery, a.name);
+          const scoreB = stringSimilarity.compareTwoStrings(searchQuery, b.name);
           return scoreB - scoreA;
         }),
       );
@@ -158,53 +161,61 @@ async function getResults(
   }
 }
 
-function resolveList(searchQuery: string, endpoint: PokeApiEndpoint, results: IApiResource<any>[]) {
-  return results.map(async (pokemon) => {
-    try {
-      const name: string = (pokemon as any).name;
-      if (!name.toUpperCase().includes(searchQuery.toUpperCase())) {
-        return null;
-      }
+async function resolveOneResource(
+  each: any,
+  searchQuery: string,
+  endpoint: PokeApiEndpoint,
+): Promise<SearchResult | null> {
+  try {
+    const resourceName = (each.name as string).toLowerCase().replace(/[^a-z0-9]/g, ' ');
+    const nameWords = resourceName.split(' ');
 
-      const data = await resolve<any>({
-        endpoint: 'Pokemon',
-        id: getIdFromUrl(pokemon.url),
-      });
-      if (!data) {
-        return null;
-      }
-
-      let names = null;
-
-      if (data.species) {
-        names = await resolve<any>({ endpoint: 'PokemonSpecies', id: getIdFromUrl(data.species.url) });
-        if (!names) {
-          return null;
-        }
-      }
-
-      return {
-        id: data.id,
-        type: endpoint,
-        name: names?.names.find((e: any) => e.language.name === 'en')?.name,
-      } as ResultData;
-    } catch (err) {
+    const query = searchQuery.toLowerCase().replace(/[^a-z0-9]/g, ' ');
+    if (!resourceName.includes(query) && !nameWords.some((word) => word.includes(query))) {
       return null;
     }
-  });
+
+    // Get main data
+    const data = await resolve<any>({
+      endpoint,
+      id: getIdFromUrl(each.url),
+    });
+    if (!data) {
+      return null;
+    }
+
+    // Get names in various languages
+    let names: IName[] = data.names ?? [];
+
+    // If it has species, get the name from it
+    if (data.species) {
+      const species = await resolve<IPokemonSpecies>({
+        endpoint: 'PokemonSpecies',
+        id: getIdFromUrl(data.species.url),
+      });
+      names = species?.names ?? [];
+    }
+
+    // No name available, skip this one
+    if (!names.length) {
+      return null;
+    }
+
+    // Find name for current language
+    const name = names.find((e) => e.language.name === 'en')!.name;
+
+    return { id: data.id, type: endpointToName(endpoint), name };
+  } catch (err) {
+    return null;
+  }
 }
 
 function endpointToName(endpoint: PokeApiEndpoint): string {
   switch (endpoint) {
     case 'Pokemon':
       return 'Pokémon';
-    case 'Move':
-      return 'Move';
-    case 'Ability':
-      return 'Ability';
-    case 'Item':
     default:
-      return 'Item';
+      return endpoint;
   }
 }
 
