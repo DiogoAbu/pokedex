@@ -9,7 +9,7 @@ export default function useStatusBarStyle(): void {
   const colorScheme = useColorScheme();
 
   useEffect(() => {
-    const { colors, dark } = colorScheme !== 'dark' ? darkTheme : lightTheme;
+    const { colors, dark } = colorScheme === 'dark' ? darkTheme : lightTheme;
 
     if (Platform.OS === 'android') {
       // StatusBar.setTranslucent(true);

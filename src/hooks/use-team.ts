@@ -2,7 +2,7 @@ import { MMKV as storage } from 'react-native-mmkv';
 
 const storageKey = 'pokémon-teams';
 
-type SingleOrArray<Id, ResponseData> = Id extends number ? ResponseData : ResponseData[];
+type PokeTeamOneOrArray<Id> = Id extends number ? PokeTeam : PokeTeam[];
 
 export interface PokeTeam {
   id: number;
@@ -12,10 +12,9 @@ export interface PokeTeam {
   updatedAt: number;
 }
 
-export default function useTeam<
-  Id extends number | undefined,
-  ResponseData extends SingleOrArray<Id, PokeTeam>
->(id?: Id): ResponseData | null {
+export default function useTeam<Id extends number | undefined, ResponseData extends PokeTeamOneOrArray<Id>>(
+  id?: Id,
+): ResponseData | null {
   let teamData: ResponseData | null = null;
 
   // const test: PokeTeam[] = [
@@ -34,6 +33,7 @@ export default function useTeam<
   //     updatedAt: 0,
   //   },
   // ];
+  // return test;
 
   try {
     // Read from storage

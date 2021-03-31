@@ -25,7 +25,7 @@ const App: FC = () => {
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer theme={colorScheme !== 'dark' ? darkTheme : lightTheme}>
+      <NavigationContainer theme={colorScheme === 'dark' ? darkTheme : lightTheme}>
         <MainStack />
       </NavigationContainer>
     </SafeAreaProvider>

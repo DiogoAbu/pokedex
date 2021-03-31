@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { ListRenderItem, View } from 'react-native';
 
+import Pressable from '!/components/Pressable';
 import Text from '!/components/Text';
 import { PokeTeam } from '!/hooks/use-team';
 
@@ -9,7 +10,11 @@ import styles from './styles';
 
 const PokemonTeamItem: ListRenderItem<PokeTeam> = ({ item: team }) => {
   return (
-    <View style={styles.pokemonTeamContainer}>
+    <Pressable
+      androidRipple={{ borderless: false }}
+      onPress={() => undefined}
+      style={styles.pokemonTeamContainer}
+    >
       <Text style={styles.pokemonTeamName}>{team.name}</Text>
 
       <View style={styles.pokemonTeamRow}>
@@ -17,7 +22,7 @@ const PokemonTeamItem: ListRenderItem<PokeTeam> = ({ item: team }) => {
           <PokemonTeamSprite key={`${id}-${index.toString()}`} pokemonId={id} />
         ))}
       </View>
-    </View>
+    </Pressable>
   );
 };
 

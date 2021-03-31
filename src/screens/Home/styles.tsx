@@ -26,24 +26,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  contentTitle: {
+  pokemonTeamMainTitle: {
     fontWeight: 'bold',
     fontSize: 20,
-    marginTop: constants.gridBig,
-    marginBottom: constants.grid,
-    marginLeft: constants.gridSmall / 2,
+    marginTop: constants.grid,
+    marginBottom: constants.gridSmall,
   },
-  emptyTeamText: {
+  pokemonTeamEmptyText: {
     textAlign: 'center',
     margin: constants.grid,
+    marginBottom: constants.gridBig,
   },
-
   pokemonTeamSeparator: {
     backgroundColor: constants.colors.black,
     opacity: 0.2,
   },
   pokemonTeamContainer: {
-    paddingVertical: constants.gridSmall,
+    padding: constants.gridSmall,
   },
   pokemonTeamRow: {
     flexDirection: 'row',

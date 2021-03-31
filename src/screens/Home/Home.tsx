@@ -85,7 +85,7 @@ const Home: FC = () => {
       ItemSeparatorComponent={() => <Separator style={styles.pokemonTeamSeparator} />}
       keyboardShouldPersistTaps='always'
       ListEmptyComponent={
-        <Text style={styles.emptyTeamText} testID='team-list-empty'>
+        <Text style={styles.pokemonTeamEmptyText} testID='team-list-empty'>
           No team yet, go capture a Pokémon!
         </Text>
       }
@@ -133,7 +133,7 @@ const Home: FC = () => {
             </View>
           </View>
 
-          <Text style={styles.contentTitle}>Your teams</Text>
+          <Text style={styles.pokemonTeamMainTitle}>Your teams</Text>
         </>
       }
       renderItem={(props) => <PokemonTeamItem {...props} />}
