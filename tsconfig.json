@@ -9,7 +9,7 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react-native",
-    "lib": ["es6", "es2017", "es2019"],
+    "lib": ["dom", "es6", "es2017", "es2019"],
     "module": "commonjs",
     "moduleResolution": "node",
     "noEmit": true,
