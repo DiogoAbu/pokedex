@@ -19,7 +19,7 @@ interface Props {
 const BaseStats: FC<Props> = ({ pokemon, displayFooterImage }) => {
   const baseStats: Record<BaseStatNames, number> = pokemon.stats.reduce((prev, curr) => {
     return { ...prev, [curr.stat.name]: curr.base_stat };
-  }, {} as any);
+  }, {} as Record<BaseStatNames, number>);
 
   return (
     <>

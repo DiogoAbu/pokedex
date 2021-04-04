@@ -1,6 +1,6 @@
 import { useCallback, useLayoutEffect, useRef } from 'react';
 
-type Callback<Args extends any[], Result> = (...args: Args) => Result;
+type Callback<Args extends never[], Result> = (...args: Args) => Result;
 
 /**
  * Create callback that keeps the same reference during entire lifecycle of the component while having access to fresh
@@ -10,7 +10,9 @@ type Callback<Args extends any[], Result> = (...args: Args) => Result;
  *
  * If you want to call it during the render - you probably don't need to memoize the function or using `useCallbacl` might be more suitable
  */
-function useMethod<Args extends any[], Result>(callback: Callback<Args, Result>): (...args: Args) => Result {
+function useMethod<Args extends never[], Result>(
+  callback: Callback<Args, Result>,
+): (...args: Args) => Result {
   const lastRenderCallbackRef = useRef<Callback<Args, Result>>(callback);
 
   const methodLikeCallback = useCallback((...args: Args) => {

@@ -44,9 +44,9 @@ const MoveItem: ListRenderItem<IPokemonMove> = ({ item, index }) => {
   } else if (learnMethodName === 'machine') {
     learn = `Learn by using: ${machineItem?.names?.find((e) => e.language.name === 'en')?.name ?? '...'}`;
   } else if (learnMethodName === 'egg') {
-    learn = `Learn by breeding`;
+    learn = 'Learn by breeding';
   } else if (learnMethodName === 'tutor') {
-    learn = `Learn by tutoring`;
+    learn = 'Learn by tutoring';
   }
 
   if (!move && index >= 10) {

@@ -111,8 +111,11 @@ export default function usePokeApi<
             setData((prev) => {
               return {
                 ...responseData,
-                results: [...((prev as any)?.results || []), ...(responseData as any)?.results],
-              } as any;
+                results: [
+                  ...((prev as Record<string, never>)?.results || []),
+                  ...(responseData as Record<string, never>)?.results,
+                ],
+              } as ResponseData;
             });
           } else {
             // Overwrite data
@@ -170,7 +173,7 @@ export default function usePokeApi<
   };
 }
 
-export async function resolve<ResponseData = any>({
+export async function resolve<ResponseData = never>({
   endpoint,
   id,
   page,
@@ -197,14 +200,14 @@ export async function resolve<ResponseData = any>({
     // Get from api
     if (id) {
       // Fetch by id
-      responseData = await apiFetch({ endpoint, id, fetchOptions });
+      responseData = ((await apiFetch({ endpoint, id, fetchOptions })) as unknown) as ResponseData;
     } else if (typeof page === 'number') {
       if (page === 0) {
         // Fetch all results
-        responseData = (await apiListAll({ endpoint, fetchOptions })) as any;
+        responseData = ((await apiListAll({ endpoint, fetchOptions })) as unknown) as ResponseData;
       } else if (page > 0) {
         // Fetch results by page
-        responseData = (await apiList({ endpoint, page, fetchOptions })) as any;
+        responseData = ((await apiList({ endpoint, page, fetchOptions })) as unknown) as ResponseData;
       }
     }
 
@@ -246,7 +249,7 @@ async function apiFetch({
   fetchOptions?: RequestInit;
 }) {
   // @ts-ignore
-  const api = PokeAPI[endpoint] as EndpointClass<any>;
+  const api = PokeAPI[endpoint] as EndpointClass<typeof endpoint>;
   return api.fetch(id, false, fetchOptions);
 }
 
@@ -263,7 +266,7 @@ async function apiList({
   fetchOptions?: RequestInit;
 }) {
   // @ts-ignore
-  const api = PokeAPI[endpoint] as EndpointClass<any>;
+  const api = PokeAPI[endpoint] as EndpointClass<typeof endpoint>;
   const offset = (page - 1) * LIST_LIMIT;
   return api.list(LIST_LIMIT, offset, fetchOptions);
 }
@@ -279,6 +282,6 @@ async function apiListAll({
   fetchOptions?: RequestInit;
 }) {
   // @ts-ignore
-  const api = PokeAPI[endpoint] as EndpointClass<any>;
+  const api = PokeAPI[endpoint] as EndpointClass<typeof endpoint>;
   return api.listAll(false, fetchOptions);
 }

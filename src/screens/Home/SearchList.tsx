@@ -3,7 +3,7 @@ import { FlatList } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Bottleneck from 'bottleneck';
-import { IApiResource, IName, IPokemonSpecies } from 'pokeapi-typescript';
+import { IApiResource, IName, IPokemon, IPokemonSpecies } from 'pokeapi-typescript';
 import stringSimilarity from 'string-similarity';
 
 import Icon from '!/components/Icon';
@@ -22,6 +22,12 @@ const limiter = new Bottleneck({
 });
 
 const keyExtractor = (item: SearchResult) => `${item.type}/${item.name}/${String(item.id)}`;
+
+type CommonResponse = {
+  id: number;
+  names: IName[];
+  species?: IPokemon['species'];
+};
 
 type SearchResult = {
   id: number;
@@ -108,6 +114,7 @@ const SearchList: FC<SearchListProps> = ({ searchQuery, setIsSearchbarLoading })
           renderCenter={
             <>
               <Text style={styles.searchListItemTitle}>{item.name}</Text>
+
               <Text>{item.type}</Text>
             </>
           }
@@ -120,10 +127,10 @@ const SearchList: FC<SearchListProps> = ({ searchQuery, setIsSearchbarLoading })
   );
 };
 
-async function getResults(
+async function getResults<Response extends unknown>(
   searchQuery: string,
   endpoint: PokeApiEndpoint,
-  results: IApiResource<any>[],
+  results: IApiResource<Response>[],
   setResults: React.Dispatch<React.SetStateAction<SearchResult[]>>,
   setIsSearchbarLoading: React.Dispatch<React.SetStateAction<boolean>>,
 ): Promise<void> {
@@ -135,12 +142,13 @@ async function getResults(
       return;
     }
 
+    // Limit api calls
     const resultsFound = await limiter.schedule(async () => {
       setIsSearchbarLoading(true);
 
       // For each api result get search result data
       const tasks = results.map(async (each) => {
-        return resolveOneResource(each, searchQuery, endpoint);
+        return resolveOneResource<IApiResource<Response>>(each, searchQuery, endpoint);
       });
 
       return Promise.all(tasks);
@@ -161,13 +169,15 @@ async function getResults(
   }
 }
 
-async function resolveOneResource(
-  each: any,
+async function resolveOneResource<Each = unknown, Response extends CommonResponse = CommonResponse>(
+  resource: Each,
   searchQuery: string,
   endpoint: PokeApiEndpoint,
 ): Promise<SearchResult | null> {
   try {
-    const resourceName = (each.name as string).toLowerCase().replace(/[^a-z0-9]/g, ' ');
+    const each = (resource as unknown) as Record<string, string>;
+
+    const resourceName = each.name.toLowerCase().replace(/[^a-z0-9]/g, ' ');
     const nameWords = resourceName.split(' ');
 
     const query = searchQuery.toLowerCase().replace(/[^a-z0-9]/g, ' ');
@@ -176,7 +186,7 @@ async function resolveOneResource(
     }
 
     // Get main data
-    const data = await resolve<any>({
+    const data = await resolve<Response>({
       endpoint,
       id: getIdFromUrl(each.url),
     });
